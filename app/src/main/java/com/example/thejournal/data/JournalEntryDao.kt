@@ -20,8 +20,4 @@ interface JournalEntryDao {
     @Transaction
     @Query("SELECT * FROM journal_entries WHERE date = :date")
     suspend fun getEntryByDate(date: String): JournalEntryWithDetails?
-
-    @Transaction
-    @Query("SELECT * FROM journal_entries")
-    suspend fun getAllEntries(): List<JournalEntryWithDetails>
 }
