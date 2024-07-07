@@ -1,13 +1,9 @@
-package com.example.thejournal
+package com.example.thejournal.data
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.thejournal.model.AmazingThing
-import com.example.thejournal.model.JournalEntry
-import com.example.thejournal.model.JournalEntryWithDetails
-import com.example.thejournal.model.ThingToImprove
 
 @Dao
 interface JournalEntryDao {

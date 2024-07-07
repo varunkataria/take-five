@@ -2,6 +2,8 @@ package com.example.thejournal
 
 import android.app.Application
 import androidx.room.Room
+import com.example.thejournal.data.AppDatabase
+import com.example.thejournal.data.JournalEntryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
