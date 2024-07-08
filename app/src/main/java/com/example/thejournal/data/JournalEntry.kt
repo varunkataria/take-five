@@ -2,6 +2,7 @@ package com.example.thejournal.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import java.util.Date
 
 
@@ -12,6 +13,7 @@ import java.util.Date
  * @property date Date of the journal entry.
  */
 @Entity(tableName = "journal_entries")
+@TypeConverters(Converters::class)
 class JournalEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: Date
