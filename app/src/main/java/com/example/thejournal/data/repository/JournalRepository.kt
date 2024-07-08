@@ -1,4 +1,4 @@
-package com.example.thejournal
+package com.example.thejournal.data.repository
 
 import com.example.thejournal.data.AmazingThing
 import com.example.thejournal.data.JournalEntry

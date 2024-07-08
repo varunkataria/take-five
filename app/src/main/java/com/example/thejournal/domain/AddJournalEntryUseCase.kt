@@ -1,5 +1,6 @@
-package com.example.thejournal
+package com.example.thejournal.domain
 
+import com.example.thejournal.data.repository.JournalRepository
 import java.util.Date
 import javax.inject.Inject
 
