@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import java.util.Date
 
 @Dao
 interface JournalEntryDao {
@@ -19,5 +20,5 @@ interface JournalEntryDao {
 
     @Transaction
     @Query("SELECT * FROM journal_entries WHERE date = :date")
-    suspend fun getEntryByDate(date: String): JournalEntryWithDetails?
+    suspend fun getEntryByDate(date: Date): JournalEntryWithDetails?
 }

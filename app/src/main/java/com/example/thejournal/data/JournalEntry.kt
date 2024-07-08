@@ -2,6 +2,7 @@ package com.example.thejournal.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 
 /**
@@ -13,5 +14,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "journal_entries")
 class JournalEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: String
+    val date: Date
 )

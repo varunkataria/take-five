@@ -1,5 +1,6 @@
 package com.example.thejournal
 
+import java.util.Date
 import javax.inject.Inject
 
 /**
@@ -8,7 +9,7 @@ import javax.inject.Inject
 class AddJournalEntryUseCase @Inject constructor(
     private val journalRepository: JournalRepository
 ) {
-    suspend fun execute(date: String, amazingThings: List<String>, thingsToImprove: List<String>) {
+    suspend fun execute(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
         journalRepository.addJournalEntry(date, amazingThings, thingsToImprove)
     }
 }
