@@ -5,10 +5,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.DateFormat
+import java.util.Date
 
 @Composable
 fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
@@ -16,18 +19,29 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
     var amazingThings by remember { mutableStateOf(uiState.amazingThings) }
     var thingsToImprove by remember { mutableStateOf(uiState.thingsToImprove) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-        val formattedDate = DateFormat.getDateInstance(
-            DateFormat.DEFAULT
-        ).format(uiState.date)
 
+        // Date
+        val formattedDate = DateFormat.getDateInstance(DateFormat.DEFAULT).format(uiState.date)
         Text(
             text = formattedDate,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.titleLarge,
         )
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
+        // Amazing things title
+        Text(
+            text = "3 Amazing things that happened today...",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        // Amazing things text fields
         amazingThings.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
@@ -35,19 +49,47 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
                     amazingThings = amazingThings.toMutableList().apply { this[index] = newText }
                 },
                 label = { Text("${index + 1}") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Improve day title
+        Text(
+            text = "How could I have made today even better?",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        // Improve day text fields
         thingsToImprove.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
                 onValueChange = { newText ->
                     thingsToImprove = thingsToImprove.toMutableList().apply { this[index] = newText }
                 },
-                label = { Text("${index + 1}") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                label = if (thingsToImprove.size > 1) {{Text("${index + 1}")}} else null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 100.dp)
             )
         }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun JournalScreenPreview() {
+    JournalScreen(viewModel = FakeJournalViewModel())
+}
+
+class FakeJournalViewModel : JournalViewModel(null, null) {
+    init {
+        _uiState.value = JournalUiState(
+            date = Date(),
+            amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
+            thingsToImprove = listOf("Thing to Improve 1"),
+            isLoading = false
+        )
     }
 }

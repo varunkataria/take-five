@@ -12,12 +12,12 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class JournalViewModel @Inject constructor(
-    private val addJournalEntryUseCase: AddJournalEntryUseCase,
-    private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase
+open class JournalViewModel @Inject constructor(
+    private val addJournalEntryUseCase: AddJournalEntryUseCase?,
+    private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase?
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(JournalUiState())
+    protected val _uiState = MutableStateFlow(JournalUiState())
     val uiState: StateFlow<JournalUiState> = _uiState
 
     init {
@@ -27,7 +27,7 @@ class JournalViewModel @Inject constructor(
     private fun loadJournalEntryForDate(date: Date) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val entry = getJournalEntryByDateUseCase.execute(date)
+            val entry = getJournalEntryByDateUseCase?.execute(date)
             if (entry != null) {
                 _uiState.value = _uiState.value.copy(
                     amazingThings = entry.amazingThings.map { it.description },
