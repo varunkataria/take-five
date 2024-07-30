@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.thejournal.ui.theme.TheJournalTheme
 import java.text.DateFormat
 import java.util.Date
 
@@ -32,7 +33,7 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
             text = formattedDate,
             style = MaterialTheme.typography.titleLarge,
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Amazing things title
@@ -67,18 +68,24 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
             OutlinedTextField(
                 value = text,
                 onValueChange = { newText ->
-                    thingsToImprove = thingsToImprove.toMutableList().apply { this[index] = newText }
+                    thingsToImprove =
+                        thingsToImprove.toMutableList().apply { this[index] = newText }
                 },
-                label = if (thingsToImprove.size > 1) {{Text("${index + 1}")}} else null,
+                label = if (thingsToImprove.size > 1) {
+                    { Text("${index + 1}") }
+                } else null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = 100.dp)
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Save button
         if (uiState.isCurrentDayToday) {
             Button(
+                enabled = !uiState.completed,
                 onClick = {
                     viewModel.submitJournalEntry(
                         date = uiState.date,
@@ -86,21 +93,29 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
                         thingsToImprove = thingsToImprove
                     )
                 },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Record entry")
+                Text(
+                    text = "Submit",
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun JournalScreenPreview() {
-    JournalScreen(viewModel = FakeJournalViewModel())
+    TheJournalTheme {
+        JournalScreen(viewModel = FakeJournalViewModel())
+    }
 }
 
 class FakeJournalViewModel : JournalViewModel(null, null) {
     init {
         _uiState.value = JournalUiState(
+            completed = false,
             date = Date(),
             amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
             thingsToImprove = listOf("Thing to Improve 1"),

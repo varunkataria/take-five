@@ -28,17 +28,19 @@ open class JournalViewModel @Inject constructor(
     private fun loadJournalEntryForDate(date: Date) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val entry = getJournalEntryByDateUseCase?.execute(date)
+            val entryWithDetails = getJournalEntryByDateUseCase?.execute(date)
             val today = DateUtils.isToday(date.time)
-            if (entry != null) {
+            if (entryWithDetails != null) {
                 _uiState.value = _uiState.value.copy(
-                    amazingThings = entry.amazingThings.map { it.description },
-                    thingsToImprove = entry.thingsToImprove.map { it.description },
+                    completed = entryWithDetails.journalEntry.completed,
+                    amazingThings = entryWithDetails.amazingThings.map { it.description },
+                    thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
                     isCurrentDayToday = today,
                     isLoading = false
                 )
             } else {
                 _uiState.value = _uiState.value.copy(
+                    completed = false,
                     amazingThings = listOf("", "", ""),
                     thingsToImprove = listOf(""),
                     isCurrentDayToday = today,
@@ -55,6 +57,7 @@ open class JournalViewModel @Inject constructor(
                 amazingThings = amazingThings,
                 thingsToImprove = thingsToImprove
             )
+            _uiState.value = _uiState.value.copy(completed = true)
         }
     }
 }

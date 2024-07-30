@@ -18,7 +18,9 @@ class JournalApp : Application()
 object AppModule {
     @Provides
     fun provideDatabase(app: Application): AppDatabase {
-        return Room.databaseBuilder(app, AppDatabase::class.java, "journal_database").build()
+        return Room.databaseBuilder(app, AppDatabase::class.java, "journal_database")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

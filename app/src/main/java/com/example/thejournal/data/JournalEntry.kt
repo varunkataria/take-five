@@ -16,5 +16,6 @@ import java.util.Date
 @TypeConverters(Converters::class)
 class JournalEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: Date
+    val date: Date,
+    val completed: Boolean = false
 )

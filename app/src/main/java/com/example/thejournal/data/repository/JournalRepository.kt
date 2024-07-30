@@ -26,7 +26,8 @@ class JournalRepository @Inject constructor(
      * Insert a new journal entry along with its associated amazing things and things to improve.
      */
     suspend fun addJournalEntry(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
-        val entryId = journalEntryDao.insertJournalEntry(JournalEntry(date = date))
+        // Insert the journal entry & set completed to true for the given date
+        val entryId = journalEntryDao.insertJournalEntry(JournalEntry(date = date, completed = true))
 
         amazingThings.forEach { thing ->
             journalEntryDao.insertAmazingThing(AmazingThing(journalEntryId = entryId.toInt(), description = thing))
