@@ -6,5 +6,6 @@ data class JournalUiState(
     val date: Date = Date(),
     val amazingThings: List<String> = listOf("", "", ""),
     val thingsToImprove: List<String> = listOf(""),
+    val isCurrentDayToday: Boolean = false,
     val isLoading: Boolean = false
 )

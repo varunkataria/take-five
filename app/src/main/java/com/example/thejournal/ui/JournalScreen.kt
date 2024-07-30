@@ -1,6 +1,7 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,11 +21,10 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
     var thingsToImprove by remember { mutableStateOf(uiState.thingsToImprove) }
 
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.safeContentPadding(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
 
         // Date
         val formattedDate = DateFormat.getDateInstance(DateFormat.DEFAULT).format(uiState.date)
@@ -75,6 +75,21 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
                     .defaultMinSize(minHeight = 100.dp)
             )
         }
+
+        // Save button
+        if (uiState.isCurrentDayToday) {
+            Button(
+                onClick = {
+                    viewModel.submitJournalEntry(
+                        date = uiState.date,
+                        amazingThings = amazingThings,
+                        thingsToImprove = thingsToImprove
+                    )
+                },
+            ) {
+                Text("Record entry")
+            }
+        }
     }
 }
 @Preview(showBackground = true)
@@ -89,6 +104,7 @@ class FakeJournalViewModel : JournalViewModel(null, null) {
             date = Date(),
             amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
             thingsToImprove = listOf("Thing to Improve 1"),
+            isCurrentDayToday = true,
             isLoading = false
         )
     }

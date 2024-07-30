@@ -1,5 +1,6 @@
 package com.example.thejournal.ui
 
+import android.text.format.DateUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.thejournal.domain.AddJournalEntryUseCase
@@ -28,19 +29,32 @@ open class JournalViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
             val entry = getJournalEntryByDateUseCase?.execute(date)
+            val today = DateUtils.isToday(date.time)
             if (entry != null) {
                 _uiState.value = _uiState.value.copy(
                     amazingThings = entry.amazingThings.map { it.description },
                     thingsToImprove = entry.thingsToImprove.map { it.description },
+                    isCurrentDayToday = today,
                     isLoading = false
                 )
             } else {
                 _uiState.value = _uiState.value.copy(
                     amazingThings = listOf("", "", ""),
                     thingsToImprove = listOf(""),
+                    isCurrentDayToday = today,
                     isLoading = false
                 )
             }
+        }
+    }
+
+    fun submitJournalEntry(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
+        viewModelScope.launch {
+            addJournalEntryUseCase?.execute(
+                date = date,
+                amazingThings = amazingThings,
+                thingsToImprove = thingsToImprove
+            )
         }
     }
 }
