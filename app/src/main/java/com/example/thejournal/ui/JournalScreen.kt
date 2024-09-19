@@ -12,8 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.thejournal.ui.theme.TheJournalTheme
-import java.text.DateFormat
-import java.util.Date
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
@@ -28,7 +28,9 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
     ) {
 
         // Date
-        val formattedDate = DateFormat.getDateInstance(DateFormat.DEFAULT).format(uiState.date)
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+        val formattedDate = uiState.date.format(formatter)
+
         Text(
             text = formattedDate,
             style = MaterialTheme.typography.titleLarge,
@@ -83,7 +85,7 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Save button
-        if (uiState.isCurrentDayToday) {
+        if (uiState.isToday) {
             Button(
                 enabled = !uiState.completed,
                 onClick = {
@@ -116,10 +118,10 @@ class FakeJournalViewModel : JournalViewModel(null, null) {
     init {
         _uiState.value = JournalUiState(
             completed = false,
-            date = Date(),
+            date = LocalDate.now(),
             amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
             thingsToImprove = listOf("Thing to Improve 1"),
-            isCurrentDayToday = true,
+            isToday = true,
             isLoading = false
         )
     }

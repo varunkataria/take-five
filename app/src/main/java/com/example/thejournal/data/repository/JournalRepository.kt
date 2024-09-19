@@ -5,7 +5,7 @@ import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.data.JournalEntryDao
 import com.example.thejournal.data.JournalEntryWithDetails
 import com.example.thejournal.data.ThingToImprove
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,7 +25,7 @@ class JournalRepository @Inject constructor(
     /**
      * Insert a new journal entry along with its associated amazing things and things to improve.
      */
-    suspend fun addJournalEntry(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
+    suspend fun addJournalEntry(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
         // Insert the journal entry & set completed to true for the given date
         val entryId = journalEntryDao.insertJournalEntry(JournalEntry(date = date, completed = true))
 
@@ -43,7 +43,7 @@ class JournalRepository @Inject constructor(
      *
      * @return A JournalEntryWithDetails object containing the journal entry and related entities.
      */
-    suspend fun getJournalEntryByDate(date: Date): JournalEntryWithDetails? {
+    suspend fun getJournalEntryByDate(date: LocalDate): JournalEntryWithDetails? {
         return journalEntryDao.getEntryByDate(date)
     }
 }

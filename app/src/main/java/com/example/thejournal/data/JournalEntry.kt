@@ -3,7 +3,7 @@ package com.example.thejournal.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import java.util.Date
+import java.time.LocalDate
 
 
 /**
@@ -16,6 +16,6 @@ import java.util.Date
 @TypeConverters(Converters::class)
 class JournalEntry(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val date: Date,
+    val date: LocalDate,
     val completed: Boolean = false
 )

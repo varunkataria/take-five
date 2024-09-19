@@ -1,7 +1,7 @@
 package com.example.thejournal.domain
 
 import com.example.thejournal.data.repository.JournalRepository
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -10,7 +10,7 @@ import javax.inject.Inject
 class AddJournalEntryUseCase @Inject constructor(
     private val journalRepository: JournalRepository
 ) {
-    suspend fun execute(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
+    suspend fun execute(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
         journalRepository.addJournalEntry(date, amazingThings, thingsToImprove)
     }
 }

@@ -2,7 +2,7 @@ package com.example.thejournal.domain
 
 import com.example.thejournal.data.repository.JournalRepository
 import com.example.thejournal.data.JournalEntryWithDetails
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class GetJournalEntryByDateUseCase @Inject constructor(
     private val journalRepository: JournalRepository
 ) {
-    suspend fun execute(date: Date): JournalEntryWithDetails? {
+    suspend fun execute(date: LocalDate): JournalEntryWithDetails? {
         return journalRepository.getJournalEntryByDate(date)
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.TypeConverters
-import java.util.Date
+import java.time.LocalDate
 
 @Dao
 interface JournalEntryDao {
@@ -22,5 +22,5 @@ interface JournalEntryDao {
     @Transaction
     @Query("SELECT * FROM journal_entries WHERE date = :date")
     @TypeConverters(Converters::class)
-    suspend fun getEntryByDate(date: Date): JournalEntryWithDetails?
+    suspend fun getEntryByDate(date: LocalDate): JournalEntryWithDetails?
 }

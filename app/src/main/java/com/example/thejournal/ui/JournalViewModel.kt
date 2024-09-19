@@ -1,6 +1,5 @@
 package com.example.thejournal.ui
 
-import android.text.format.DateUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.thejournal.domain.AddJournalEntryUseCase
@@ -9,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,20 +21,20 @@ open class JournalViewModel @Inject constructor(
     val uiState: StateFlow<JournalUiState> = _uiState
 
     init {
-        loadJournalEntryForDate(Date())
+        loadJournalEntryForDate(LocalDate.now())
     }
 
-    private fun loadJournalEntryForDate(date: Date) {
+    private fun loadJournalEntryForDate(date: LocalDate) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
             val entryWithDetails = getJournalEntryByDateUseCase?.execute(date)
-            val today = DateUtils.isToday(date.time)
+            val today = LocalDate.now() == date
             if (entryWithDetails != null) {
                 _uiState.value = _uiState.value.copy(
                     completed = entryWithDetails.journalEntry.completed,
                     amazingThings = entryWithDetails.amazingThings.map { it.description },
                     thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
-                    isCurrentDayToday = today,
+                    isToday = today,
                     isLoading = false
                 )
             } else {
@@ -43,14 +42,14 @@ open class JournalViewModel @Inject constructor(
                     completed = false,
                     amazingThings = listOf("", "", ""),
                     thingsToImprove = listOf(""),
-                    isCurrentDayToday = today,
+                    isToday = today,
                     isLoading = false
                 )
             }
         }
     }
 
-    fun submitJournalEntry(date: Date, amazingThings: List<String>, thingsToImprove: List<String>) {
+    fun submitJournalEntry(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
         viewModelScope.launch {
             addJournalEntryUseCase?.execute(
                 date = date,
