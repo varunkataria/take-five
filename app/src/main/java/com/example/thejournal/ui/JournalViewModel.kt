@@ -59,4 +59,16 @@ open class JournalViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(completed = true)
         }
     }
+
+    fun updateAmazingThing(index: Int, newText: String) {
+        val updatedAmazingThings = _uiState.value.amazingThings.toMutableList()
+        updatedAmazingThings[index] = newText
+        _uiState.value = _uiState.value.copy(amazingThings = updatedAmazingThings)
+    }
+
+    fun updateThingToImprove(index: Int, newText: String) {
+        val updatedThingsToImprove = _uiState.value.thingsToImprove.toMutableList()
+        updatedThingsToImprove[index] = newText
+        _uiState.value = _uiState.value.copy(thingsToImprove = updatedThingsToImprove)
+    }
 }

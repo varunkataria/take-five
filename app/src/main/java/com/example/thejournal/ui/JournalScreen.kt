@@ -18,8 +18,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-    var amazingThings by remember { mutableStateOf(uiState.amazingThings) }
-    var thingsToImprove by remember { mutableStateOf(uiState.thingsToImprove) }
 
     Column(
         modifier = Modifier.safeContentPadding(),
@@ -40,16 +38,17 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
 
         // Amazing things title
         Text(
-            text = "3 Amazing things that happened today...",
+            text = "What are three amazing things that happened today?",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         // Amazing things text fields
-        amazingThings.forEachIndexed { index, text ->
+        uiState.amazingThings.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
+                readOnly = uiState.completed,
                 onValueChange = { newText ->
-                    amazingThings = amazingThings.toMutableList().apply { this[index] = newText }
+                    viewModel.updateAmazingThing(index, newText)
                 },
                 label = { Text("${index + 1}") },
                 modifier = Modifier
@@ -66,14 +65,14 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
             modifier = Modifier.padding(bottom = 4.dp)
         )
         // Improve day text fields
-        thingsToImprove.forEachIndexed { index, text ->
+        uiState.thingsToImprove.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
                 onValueChange = { newText ->
-                    thingsToImprove =
-                        thingsToImprove.toMutableList().apply { this[index] = newText }
+                    viewModel.updateThingToImprove(index, newText)
                 },
-                label = if (thingsToImprove.size > 1) {
+                readOnly = uiState.completed,
+                label = if (uiState.thingsToImprove.size > 1) {
                     { Text("${index + 1}") }
                 } else null,
                 modifier = Modifier
@@ -91,8 +90,8 @@ fun JournalScreen(viewModel: JournalViewModel = viewModel()) {
                 onClick = {
                     viewModel.submitJournalEntry(
                         date = uiState.date,
-                        amazingThings = amazingThings,
-                        thingsToImprove = thingsToImprove
+                        amazingThings = uiState.amazingThings,
+                        thingsToImprove = uiState.thingsToImprove
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
