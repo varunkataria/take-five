@@ -13,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class JournalViewModel @Inject constructor(
-    private val addJournalEntryUseCase: AddJournalEntryUseCase?,
-    private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase?
+    private val addJournalEntryUseCase: AddJournalEntryUseCase,
+    private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase
 ) : ViewModel() {
 
     protected val _uiState = MutableStateFlow(JournalUiState())
@@ -27,7 +27,7 @@ open class JournalViewModel @Inject constructor(
     private fun loadJournalEntryForDate(date: LocalDate) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val entryWithDetails = getJournalEntryByDateUseCase?.execute(date)
+            val entryWithDetails = getJournalEntryByDateUseCase.execute(date)
             val today = LocalDate.now() == date
             if (entryWithDetails != null) {
                 _uiState.value = _uiState.value.copy(
@@ -51,7 +51,7 @@ open class JournalViewModel @Inject constructor(
 
     fun submitJournalEntry(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
         viewModelScope.launch {
-            addJournalEntryUseCase?.execute(
+            addJournalEntryUseCase.execute(
                 date = date,
                 amazingThings = amazingThings,
                 thingsToImprove = thingsToImprove

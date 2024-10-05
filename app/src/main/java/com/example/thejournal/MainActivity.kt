@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
-import com.example.thejournal.ui.JournalScreen
+import com.example.thejournal.ui.JournalNavigation
 import com.example.thejournal.ui.theme.TheJournalTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TheJournalTheme {
                 Surface {
-                    JournalScreen()
+                    JournalNavigation()
                 }
             }
         }
