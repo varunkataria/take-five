@@ -9,14 +9,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.thejournal.ui.theme.TheJournalTheme
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    JournalScreen(
+        uiState = uiState,
+        onDateClick = onDateClick,
+        onAmazingThingTextChange = viewModel::updateAmazingThing,
+        onThingToImproveTextChange = viewModel::updateThingToImprove,
+        onSubmitClick = viewModel::submitJournalEntry
+    )
+}
 
+@Composable
+private fun JournalScreen(
+    uiState: JournalUiState,
+    onDateClick: () -> Unit,
+    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
+    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
+    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit
+) {
     Column(
         modifier = Modifier.safeContentPadding(),
         verticalArrangement = Arrangement.Center,
@@ -47,7 +66,7 @@ fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltVie
                 value = text,
                 readOnly = uiState.completed,
                 onValueChange = { newText ->
-                    viewModel.updateAmazingThing(index, newText)
+                    onAmazingThingTextChange(index, newText)
                 },
                 label = { Text("${index + 1}") },
                 modifier = Modifier
@@ -68,7 +87,7 @@ fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltVie
             OutlinedTextField(
                 value = text,
                 onValueChange = { newText ->
-                    viewModel.updateThingToImprove(index, newText)
+                    onThingToImproveTextChange(index, newText)
                 },
                 readOnly = uiState.completed,
                 label = if (uiState.thingsToImprove.size > 1) {
@@ -87,10 +106,10 @@ fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltVie
             Button(
                 enabled = !uiState.completed,
                 onClick = {
-                    viewModel.submitJournalEntry(
-                        date = uiState.date,
-                        amazingThings = uiState.amazingThings,
-                        thingsToImprove = uiState.thingsToImprove
+                    onSubmitClick(
+                        uiState.date,
+                        uiState.amazingThings,
+                        uiState.thingsToImprove
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -104,23 +123,23 @@ fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltVie
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun JournalScreenPreview() {
-//    TheJournalTheme {
-//        JournalScreen(onDateClick = {}, viewModel = FakeJournalViewModel())
-//    }
-//}
-//
-//class FakeJournalViewModel : JournalViewModel(null, null) {
-//    init {
-//        _uiState.value = JournalUiState(
-//            completed = false,
-//            date = LocalDate.now(),
-//            amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
-//            thingsToImprove = listOf("Thing to Improve 1"),
-//            isToday = true,
-//            isLoading = false
-//        )
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun JournalScreenPreview() {
+    TheJournalTheme {
+        JournalScreen(
+            uiState = JournalUiState(
+                completed = false,
+                date = LocalDate.now(),
+                amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
+                thingsToImprove = listOf("Thing to Improve 1"),
+                isToday = true,
+                isLoading = false
+            ),
+            onDateClick = {},
+            onAmazingThingTextChange = { _, _ -> },
+            onThingToImproveTextChange = { _, _ -> },
+            onSubmitClick = { _, _, _ -> }
+        )
+    }
+}
