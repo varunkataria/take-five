@@ -131,8 +131,12 @@ fun JournalScreenPreview() {
             uiState = JournalUiState(
                 completed = false,
                 date = LocalDate.now(),
-                amazingThings = listOf("Amazing Thing 1", "Amazing Thing 2", "Amazing Thing 3"),
-                thingsToImprove = listOf("Thing to Improve 1"),
+                amazingThings = listOf(
+                    "I saw The Wild Robot movie and it was really great",
+                    "I got home safe from Seattle",
+                    "I spent time with my beautiful, charming, amazing, gorgeous, funny boyfriend"
+                ),
+                thingsToImprove = listOf("I could have saved money on lunch and made food at home."),
                 isToday = true,
                 isLoading = false
             ),
