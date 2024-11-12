@@ -4,12 +4,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,21 +31,26 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarMonth
+import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
 fun CalendarScreen() {
+    val coroutineScope = rememberCoroutineScope()
+
+    val today = remember { LocalDate.now() }
     val currentMonth = remember { YearMonth.now() }
-    val startMonth = remember { currentMonth.minusMonths(500) }
-    val endMonth = remember { currentMonth.plusMonths(500) }
+    val startMonth = remember { currentMonth.minusMonths(120) }
+    val endMonth = remember { currentMonth.plusMonths(120) }
     var selection by remember { mutableStateOf<CalendarDay?>(null) }
     val daysOfWeek = remember { daysOfWeek() }
 
@@ -55,22 +59,16 @@ fun CalendarScreen() {
         endMonth = endMonth,
         firstVisibleMonth = currentMonth,
         firstDayOfWeek = daysOfWeek.first(),
-        outDateStyle = OutDateStyle.EndOfGrid,
+        outDateStyle = OutDateStyle.EndOfRow,
     )
-    val coroutineScope = rememberCoroutineScope()
     val visibleMonth = rememberFirstCompletelyVisibleMonth(state)
+
     LaunchedEffect(visibleMonth) {
         // Clear selection if we scroll to a new month.
         selection = null
     }
 
-
-
     Column {
-        Text("CalendarScreen")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         CalendarTitle(
             currentMonth = visibleMonth.yearMonth,
             goToPrevious = {
@@ -88,9 +86,13 @@ fun CalendarScreen() {
         HorizontalCalendar(
             modifier = Modifier.wrapContentWidth(),
             state = state,
-            dayContent = { day -> Day(day) },
+            dayContent = { day ->
+                val isSelectable = day.position == DayPosition.MonthDate
+                val isToday = day.position == DayPosition.MonthDate && day.date == today
+                Day(day, isSelectable, isToday)
+            },
             monthHeader = {
-                MonthHeader(
+                DaysOfWeekHeader(
                     modifier = Modifier.padding(vertical = 8.dp),
                     daysOfWeek = daysOfWeek,
                 )
@@ -101,30 +103,32 @@ fun CalendarScreen() {
 
 @Composable
 fun Day(
-    day: CalendarDay
+    day: CalendarDay,
+    isSelectable: Boolean,
+    isToday: Boolean
 ) {
     Box(
         modifier = Modifier
             .aspectRatio(1f) // This is important for square-sizing!
             .padding(1.dp)
             .border(
-                width = 1.dp,
-                color = Color.Black,
+                width = if (isToday) 5.dp else 0.dp,
+                color = if (isToday) Color.Red else Color.Transparent,
+                shape = RoundedCornerShape(10.dp) // Optional: Add rounded corners
             )
-
     ) {
         Text(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 3.dp, end = 4.dp),
+                .align(Alignment.Center),
             text = day.date.dayOfMonth.toString(),
             fontSize = 18.sp,
+            color = if (isSelectable) Color.Black else Color.Gray
         )
     }
 }
 
 @Composable
-private fun MonthHeader(
+private fun DaysOfWeekHeader(
     modifier: Modifier = Modifier,
     daysOfWeek: List<DayOfWeek> = emptyList(),
 ) {
@@ -134,8 +138,8 @@ private fun MonthHeader(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
-                color = Color.White,
-                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.US),
+                color = Color.Black,
+                text = dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.US),
                 fontWeight = FontWeight.Light
             )
         }
@@ -143,10 +147,10 @@ private fun MonthHeader(
 }
 
 /**
- * Alternative way to find the first fully visible month in the layout.
+ * Finds the first fully visible month in the layout.
  */
 @Composable
-fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarMonth {
+private fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarMonth {
     val visibleMonth = remember(state) { mutableStateOf(state.firstVisibleMonth) }
     // Only take non-null values as null will be produced when the
     // list is mid-scroll as no index will be completely visible.

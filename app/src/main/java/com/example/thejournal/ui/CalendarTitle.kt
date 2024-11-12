@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -34,7 +35,7 @@ fun CalendarTitle(
     goToPrevious: () -> Unit,
     goToNext: () -> Unit,
     modifier: Modifier = Modifier,
-    ) {
+) {
     Row(
         modifier = modifier.height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -44,10 +45,14 @@ fun CalendarTitle(
             contentDescription = "Previous",
             onClick = goToPrevious,
         )
+        // Date
+        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+        val formattedMonth = currentMonth.format(formatter)
+
         Text(
             modifier = Modifier
                 .weight(1f),
-            text = currentMonth.toString(),
+            text = formattedMonth,
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
@@ -90,4 +95,4 @@ fun CalendarTitlePreview() = CalendarTitle(
     goToPrevious = {},
     goToNext = {},
 
-)
+    )
