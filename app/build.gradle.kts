@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.thejournal"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.thejournal"
