@@ -27,10 +27,11 @@ fun Day(
     day: CalendarDay,
     isSelectable: Boolean,
     isToday: Boolean,
-    onDateClick: (LocalDate) -> Unit
+    onDateClick: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f) // This is important for square-sizing!
             .padding(1.dp)
             .border(

@@ -45,7 +45,7 @@ import java.util.Locale
  * Calendar screen to select a date
  */
 @Composable
-fun CalendarScreen(onDateClick: (LocalDate) -> Unit) {
+fun CalendarScreen(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope()
 
     val today = remember { LocalDate.now() }
@@ -69,7 +69,7 @@ fun CalendarScreen(onDateClick: (LocalDate) -> Unit) {
         selection = null
     }
 
-    Column {
+    Column(modifier = modifier) {
         CalendarTitle(
             currentMonth = visibleMonth.yearMonth,
             goToPrevious = {
