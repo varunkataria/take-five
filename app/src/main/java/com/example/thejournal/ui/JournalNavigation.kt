@@ -15,6 +15,9 @@ data class Journal(val date: String? = null)
 @Serializable
 object Calendar
 
+/**
+ * Navigation graph for the Journal screens
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalNavigation() {

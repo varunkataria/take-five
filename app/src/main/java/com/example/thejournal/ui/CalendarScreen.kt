@@ -1,15 +1,10 @@
 package com.example.thejournal.ui
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,13 +14,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.core.CalendarDay
@@ -44,6 +41,9 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+/**
+ * Calendar screen to select a date
+ */
 @Composable
 fun CalendarScreen(onDateClick: (LocalDate) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
@@ -102,34 +102,9 @@ fun CalendarScreen(onDateClick: (LocalDate) -> Unit) {
     }
 }
 
-@Composable
-fun Day(
-    day: CalendarDay,
-    isSelectable: Boolean,
-    isToday: Boolean,
-    onDateClick: (LocalDate) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f) // This is important for square-sizing!
-            .padding(1.dp)
-            .border(
-                width = if (isToday) 5.dp else 0.dp,
-                color = if (isToday) Color.Red else Color.Transparent,
-                shape = RoundedCornerShape(10.dp)
-            )
-            .clickable(onClick = { onDateClick(day.date) })
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center),
-            text = day.date.dayOfMonth.toString(),
-            fontSize = 18.sp,
-            color = if (isSelectable) Color.Black else Color.Gray
-        )
-    }
-}
-
+/**
+ * Heading row to display days of the week above the calendar
+ */
 @Composable
 private fun DaysOfWeekHeader(
     modifier: Modifier = Modifier,
@@ -165,3 +140,12 @@ private fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarM
     return visibleMonth.value
 }
 
+@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_7A)
+@Composable
+fun CalendarScreenPreview() {
+    TheJournalTheme {
+        CalendarScreen(
+            onDateClick = {}
+        )
+    }
+}

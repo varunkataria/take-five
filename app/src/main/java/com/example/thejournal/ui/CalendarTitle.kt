@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.sp
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-
+/**
+ * Title row with navigation icons for the calendar
+ */
 @Composable
 fun CalendarTitle(
     currentMonth: YearMonth,
@@ -41,7 +43,7 @@ fun CalendarTitle(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CalendarNavigationIcon(
-            imageVector = Icons.Filled.KeyboardArrowLeft,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Previous",
             onClick = goToPrevious,
         )
@@ -58,7 +60,7 @@ fun CalendarTitle(
             fontWeight = FontWeight.Medium,
         )
         CalendarNavigationIcon(
-            imageVector = Icons.Filled.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Next",
             onClick = goToNext,
         )
@@ -87,12 +89,10 @@ private fun CalendarNavigationIcon(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CalendarTitlePreview() = CalendarTitle(
-    modifier = Modifier,
     currentMonth = YearMonth.now(),
     goToPrevious = {},
-    goToNext = {},
-
-    )
+    goToNext = {}
+)

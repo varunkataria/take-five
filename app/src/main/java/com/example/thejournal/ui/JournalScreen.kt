@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,15 +17,23 @@ import com.example.thejournal.ui.theme.TheJournalTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Evening Journal entry screen
+ */
 @Composable
-fun JournalScreen(onDateClick: () -> Unit, viewModel: JournalViewModel = hiltViewModel()) {
+fun JournalScreen(
+    onDateClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: JournalViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
     JournalScreen(
         uiState = uiState,
         onDateClick = onDateClick,
         onAmazingThingTextChange = viewModel::updateAmazingThing,
         onThingToImproveTextChange = viewModel::updateThingToImprove,
-        onSubmitClick = viewModel::submitJournalEntry
+        onSubmitClick = viewModel::submitJournalEntry,
+        modifier = modifier
     )
 }
 
@@ -34,10 +43,11 @@ private fun JournalScreen(
     onDateClick: () -> Unit,
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
-    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit
+    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    modifier: Modifier
 ) {
     Column(
-        modifier = Modifier.safeContentPadding(),
+        modifier = modifier.safeContentPadding(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -123,7 +133,11 @@ private fun JournalScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    device = Devices.PIXEL_7A
+)
 @Composable
 fun JournalScreenPreview() {
     TheJournalTheme {
@@ -143,7 +157,8 @@ fun JournalScreenPreview() {
             onDateClick = {},
             onAmazingThingTextChange = { _, _ -> },
             onThingToImproveTextChange = { _, _ -> },
-            onSubmitClick = { _, _, _ -> }
+            onSubmitClick = { _, _, _ -> },
+            modifier = Modifier
         )
     }
 }

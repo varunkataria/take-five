@@ -13,6 +13,9 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
+/**
+ * ViewModel for [JournalScreen]
+ */
 @HiltViewModel
 open class JournalViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -20,7 +23,7 @@ open class JournalViewModel @Inject constructor(
     private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase
 ) : ViewModel() {
 
-    protected val _uiState = MutableStateFlow(JournalUiState())
+    private val _uiState = MutableStateFlow(JournalUiState())
     val uiState: StateFlow<JournalUiState> = _uiState
 
     private val journal: Journal = savedStateHandle.toRoute()
@@ -37,6 +40,7 @@ open class JournalViewModel @Inject constructor(
             val today = LocalDate.now() == date
             if (entryWithDetails != null) {
                 _uiState.value = _uiState.value.copy(
+                    date = date,
                     completed = entryWithDetails.journalEntry.completed,
                     amazingThings = entryWithDetails.amazingThings.map { it.description },
                     thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
@@ -45,6 +49,7 @@ open class JournalViewModel @Inject constructor(
                 )
             } else {
                 _uiState.value = _uiState.value.copy(
+                    date = date,
                     completed = false,
                     amazingThings = listOf("", "", ""),
                     thingsToImprove = listOf(""),
