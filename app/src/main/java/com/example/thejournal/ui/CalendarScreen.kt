@@ -1,6 +1,7 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(onDateClick: (LocalDate) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
 
     val today = remember { LocalDate.now() }
@@ -89,7 +90,7 @@ fun CalendarScreen() {
             dayContent = { day ->
                 val isSelectable = day.position == DayPosition.MonthDate
                 val isToday = day.position == DayPosition.MonthDate && day.date == today
-                Day(day, isSelectable, isToday)
+                Day(day, isSelectable, isToday, onDateClick)
             },
             monthHeader = {
                 DaysOfWeekHeader(
@@ -105,7 +106,8 @@ fun CalendarScreen() {
 fun Day(
     day: CalendarDay,
     isSelectable: Boolean,
-    isToday: Boolean
+    isToday: Boolean,
+    onDateClick: (LocalDate) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -114,8 +116,9 @@ fun Day(
             .border(
                 width = if (isToday) 5.dp else 0.dp,
                 color = if (isToday) Color.Red else Color.Transparent,
-                shape = RoundedCornerShape(10.dp) // Optional: Add rounded corners
+                shape = RoundedCornerShape(10.dp)
             )
+            .clickable(onClick = { onDateClick(day.date) })
     ) {
         Text(
             modifier = Modifier

@@ -1,7 +1,9 @@
 package com.example.thejournal.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.thejournal.domain.AddJournalEntryUseCase
 import com.example.thejournal.domain.GetJournalEntryByDateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class JournalViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val addJournalEntryUseCase: AddJournalEntryUseCase,
     private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase
 ) : ViewModel() {
@@ -20,8 +23,11 @@ open class JournalViewModel @Inject constructor(
     protected val _uiState = MutableStateFlow(JournalUiState())
     val uiState: StateFlow<JournalUiState> = _uiState
 
+    private val journal: Journal = savedStateHandle.toRoute()
+
     init {
-        loadJournalEntryForDate(LocalDate.now())
+        val date = journal.date?.let { LocalDate.parse(it) } ?: LocalDate.now()
+        loadJournalEntryForDate(date)
     }
 
     private fun loadJournalEntryForDate(date: LocalDate) {

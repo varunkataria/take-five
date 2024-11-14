@@ -7,19 +7,36 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Journal(val date: String? = null)
+
+@Serializable
+object Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "journal") {
-        composable("journal") { JournalScreen(onDateClick = { navController.navigate("calendar") }) }
-        composable("calendar") {
+    NavHost(navController = navController, startDestination = Journal()) {
+        composable<Journal> {
+            JournalScreen(
+                onDateClick = { navController.navigate(route = Calendar) }
+            )
+        }
+        composable<Calendar> {
             ModalBottomSheet(
                 onDismissRequest = { navController.popBackStack() },
                 sheetState = rememberModalBottomSheetState(),
-                content = { CalendarScreen() }
+                content = {
+                    CalendarScreen(onDateClick = { date ->
+                        navController.navigate(
+                            route = Journal(date = date.toString())
+                        )
+                    })
+                }
             )
         }
     }
