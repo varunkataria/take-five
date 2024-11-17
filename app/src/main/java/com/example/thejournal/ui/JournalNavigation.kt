@@ -10,6 +10,9 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 
 @Serializable
+object Home
+
+@Serializable
 data class Journal(val date: String? = null)
 
 @Serializable
@@ -23,7 +26,12 @@ object Calendar
 fun JournalNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Journal()) {
+    NavHost(navController = navController, startDestination = Home) {
+        composable<Home> {
+            HomeScreen(
+                onPromptClick = { navController.navigate(route = Journal()) }
+            )
+        }
         composable<Journal> {
             JournalScreen(
                 onDateClick = { navController.navigate(route = Calendar) }
