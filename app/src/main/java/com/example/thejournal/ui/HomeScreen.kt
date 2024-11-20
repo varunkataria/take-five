@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,12 +22,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun HomeScreen(
     onPromptClick: () -> Unit,
+    onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     HomeScreen(
         name = viewModel.name,
         onPromptClick = onPromptClick,
+        onNavBarItemClick = onNavBarItemClick,
         modifier = modifier
     )
 
@@ -35,6 +40,7 @@ fun HomeScreen(
 private fun HomeScreen(
     name: String,
     onPromptClick: () -> Unit,
+    onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier
 ) {
     Scaffold(
@@ -45,6 +51,19 @@ private fun HomeScreen(
                     Text("take five")
                 }
             )
+        },
+        bottomBar = {
+            NavigationBar {
+                bottomNavRoutes.forEach { bottomNavRoute ->
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = { onNavBarItemClick(bottomNavRoute.route) },
+                        icon = {
+                            Icon(bottomNavRoute.icon, bottomNavRoute.name)
+                        }
+                    )
+                }
+            }
         }
     ) { paddingValues ->
         Column(

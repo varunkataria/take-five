@@ -25,12 +25,12 @@ import androidx.compose.ui.unit.sp
 import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
+import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.nextMonth
 import com.kizitonwose.calendar.core.previousMonth
 import kotlinx.coroutines.flow.filterNotNull
@@ -41,11 +41,8 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
-/**
- * Calendar screen to select a date
- */
 @Composable
-fun CalendarScreen(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+fun Calendar(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope()
 
     val today = remember { LocalDate.now() }
@@ -144,7 +141,7 @@ private fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarM
 @Composable
 fun CalendarScreenPreview() {
     TheJournalTheme {
-        CalendarScreen(
+        Calendar(
             onDateClick = {}
         )
     }

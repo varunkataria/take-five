@@ -7,16 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Home
-
-@Serializable
-data class Journal(val date: String? = null)
-
-@Serializable
-object Calendar
+import androidx.navigation.toRoute
 
 /**
  * Navigation graph for the Journal screens
@@ -29,24 +20,42 @@ fun JournalNavigation() {
     NavHost(navController = navController, startDestination = Home) {
         composable<Home> {
             HomeScreen(
-                onPromptClick = { navController.navigate(route = Journal()) }
+                onPromptClick = { navController.navigate(route = Journal()) },
+                onNavBarItemClick = { route -> navController.navigate(route) }
             )
         }
-        composable<Journal> {
-            JournalScreen(
-                onDateClick = { navController.navigate(route = Calendar) }
-            )
-        }
-        composable<Calendar> {
-            ModalBottomSheet(
-                onDismissRequest = { navController.popBackStack() },
-                sheetState = rememberModalBottomSheetState(),
-                content = {
-                    CalendarScreen(onDateClick = { date ->
-                        navController.navigate(
-                            route = Journal(date = date.toString())
+        composable<Journal> { backStackEntry ->
+            val journal = backStackEntry.toRoute<Journal>()
+            if (journal.isBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { navController.popBackStack() },
+                    sheetState = rememberModalBottomSheetState(),
+                    content = {
+                        JournalScreen(
+                            onDateClick = { navController.navigate(route = Archive) },
+                            onCloseClick = { navController.popBackStack() }
                         )
-                    })
+                    }
+                )
+            } else {
+                JournalScreen(
+                    onDateClick = { navController.navigate(route = Archive) },
+                    onCloseClick = { navController.popBackStack() }
+                )
+            }
+        }
+        composable<Archive> {
+            ArchiveScreen(
+                onDateClick = { date ->
+                    navController.navigate(
+                        route = Journal(
+                            date = date.toString(),
+                            isBottomSheet = true
+                        )
+                    )
+                },
+                onCloseClick = {
+                    navController.popBackStack()
                 }
             )
         }
