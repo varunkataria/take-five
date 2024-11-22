@@ -1,9 +1,14 @@
 package com.example.thejournal.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -12,9 +17,18 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.thejournal.R
+import com.example.thejournal.ui.theme.T5_DARK
+import com.example.thejournal.ui.theme.T5_RED
 
 /**
  * Home screen
@@ -44,22 +58,36 @@ private fun HomeScreen(
     modifier: Modifier
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.background(T5_RED),
         topBar = {
             TopAppBar(
                 title = {
-                    Text("take five")
-                }
+                    Icon(
+                        painter = painterResource(id = R.drawable.take_five_logo), // Replace with your logo's resource ID
+                        contentDescription = "take five",
+                        modifier = Modifier.size(125.dp), // Adjust size as needed
+                        tint = T5_DARK // Tint the logo red
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent // Ensure the top bar is also blue
+                )
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = Color.Transparent
+            ) {
                 bottomNavRoutes.forEach { bottomNavRoute ->
                     NavigationBarItem(
                         selected = false,
                         onClick = { onNavBarItemClick(bottomNavRoute.route) },
                         icon = {
-                            Icon(bottomNavRoute.icon, bottomNavRoute.name)
+                            Icon(
+                                imageVector = bottomNavRoute.icon,
+                                contentDescription = bottomNavRoute.name,
+                                tint = Color.White
+                            )
                         }
                     )
                 }
@@ -67,19 +95,39 @@ private fun HomeScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier.padding(paddingValues),
+            modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0.8f to T5_RED,
+                            1f to T5_DARK,
+                        )
+                    )
+                )
+                .safeContentPadding()
+                .padding(paddingValues),
         ) {
             Text(
-                text = "Good morning, $name!",
-                style = MaterialTheme.typography.titleLarge,
+                text = "Good morning,",
+                style = MaterialTheme.typography.displayMedium,
+                color = Color.White
+            )
+            Text(
+                text = "$name!",
+                style = MaterialTheme.typography.displayMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
             Button(
                 onClick = onPromptClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "evening prompt",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = T5_RED
                 )
             }
         }
