@@ -1,8 +1,5 @@
 package com.example.thejournal.ui
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,7 +9,6 @@ import androidx.navigation.toRoute
 /**
  * Navigation graph for the Journal screens
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalNavigation() {
     val navController = rememberNavController()
@@ -26,23 +22,11 @@ fun JournalNavigation() {
         }
         composable<Journal> { backStackEntry ->
             val journal = backStackEntry.toRoute<Journal>()
-            if (journal.isBottomSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = { navController.popBackStack() },
-                    sheetState = rememberModalBottomSheetState(),
-                    content = {
-                        JournalScreen(
-                            onDateClick = { navController.navigate(route = Archive) },
-                            onCloseClick = { navController.popBackStack() }
-                        )
-                    }
-                )
-            } else {
-                JournalScreen(
-                    onDateClick = { navController.navigate(route = Archive) },
-                    onCloseClick = { navController.popBackStack() }
-                )
-            }
+            JournalScreen(
+                onDateClick = { navController.navigate(route = Archive) },
+                onCloseClick = { navController.popBackStack() },
+                isBottomSheet = journal.isBottomSheet
+            )
         }
         composable<Archive> {
             ArchiveScreen(

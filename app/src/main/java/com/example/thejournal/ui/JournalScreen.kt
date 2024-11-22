@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,16 +22,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
@@ -50,24 +55,37 @@ import java.time.format.DateTimeFormatter
 fun JournalScreen(
     onDateClick: () -> Unit,
     onCloseClick: () -> Unit,
+    isBottomSheet: Boolean,
     modifier: Modifier = Modifier,
     viewModel: JournalViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    JournalScreen(
-        uiState = uiState,
-        onDateClick = onDateClick,
-        onCloseClick = onCloseClick,
-        onAmazingThingTextChange = viewModel::updateAmazingThing,
-        onThingToImproveTextChange = viewModel::updateThingToImprove,
-        onSubmitClick = viewModel::submitJournalEntry,
-        modifier = modifier
-    )
+    if (isBottomSheet) {
+        JournalBottomSheet(
+            uiState = uiState,
+            onDateClick = onDateClick,
+            onCloseClick = onCloseClick,
+            onAmazingThingTextChange = viewModel::updateAmazingThing,
+            onThingToImproveTextChange = viewModel::updateThingToImprove,
+            onSubmitClick = viewModel::submitJournalEntry,
+            modifier = modifier
+        )
+    } else {
+        JournalFullScreen(
+            uiState = uiState,
+            onDateClick = onDateClick,
+            onCloseClick = onCloseClick,
+            onAmazingThingTextChange = viewModel::updateAmazingThing,
+            onThingToImproveTextChange = viewModel::updateThingToImprove,
+            onSubmitClick = viewModel::submitJournalEntry,
+            modifier = modifier
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun JournalScreen(
+private fun JournalBottomSheet(
     uiState: JournalUiState,
     onDateClick: () -> Unit,
     onCloseClick: () -> Unit,
@@ -76,10 +94,44 @@ private fun JournalScreen(
     onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
     modifier: Modifier
 ) {
-    val scrollState = rememberScrollState() // State for scrolling
+    ModalBottomSheet(
+        onDismissRequest = { onCloseClick() },
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = T5_DARK,
+        content = {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight() // Ensure the bottom sheet wraps the content height
+                    .nestedScroll(rememberNestedScrollInteropConnection())
+//                    .padding(16.dp) // Optional: add padding to the sheet
+            ) {
+                JournalScreen(
+                    uiState = uiState,
+                    onDateClick = onDateClick,
+                    onAmazingThingTextChange = onAmazingThingTextChange,
+                    onThingToImproveTextChange = onThingToImproveTextChange,
+                    onSubmitClick = onSubmitClick,
+                    modifier = modifier
+                )
+            }
+        }
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun JournalFullScreen(
+    uiState: JournalUiState,
+    onDateClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
+    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
+    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    modifier: Modifier
+) {
     Scaffold(
         modifier = modifier,
+        containerColor = T5_DARK,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -105,118 +157,139 @@ private fun JournalScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        JournalScreen(
+            uiState = uiState,
+            onDateClick = onDateClick,
+            onAmazingThingTextChange = onAmazingThingTextChange,
+            onThingToImproveTextChange = onThingToImproveTextChange,
+            onSubmitClick = onSubmitClick,
             modifier = modifier
                 .fillMaxSize()
-                .background(T5_DARK)
-                .verticalScroll(scrollState)
-                .imePadding()
-                .padding(horizontal = 16.dp)
-                .padding(paddingValues),
-        ) {
+                .padding(paddingValues)
+        )
+    }
+}
 
-            // Date
-            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-            val formattedDate = uiState.date.format(formatter)
 
-            Text(
-                text = formattedDate,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.clickable { onDateClick() }
-            )
+@Composable
+private fun JournalScreen(
+    uiState: JournalUiState,
+    onDateClick: () -> Unit,
+    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
+    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
+    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    modifier: Modifier
+) {
+    val scrollState = rememberScrollState() // State for scrolling
 
-            Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .background(T5_DARK)
+            .imePadding()
+            .padding(horizontal = 16.dp)
+    ) {
 
-            // Amazing things title
-            Text(
-                text = "Good things that happened today:",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-            // Amazing things text fields
-            uiState.amazingThings.forEachIndexed { index, text ->
-                OutlinedTextField(
-                    value = text,
-                    readOnly = uiState.completed,
-                    onValueChange = { newText ->
-                        onAmazingThingTextChange(index, newText)
-                    },
+        // Date
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+        val formattedDate = uiState.date.format(formatter)
+
+        Text(
+            text = formattedDate,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.clickable { onDateClick() }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Amazing things title
+        Text(
+            text = "Good things that happened today:",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        // Amazing things text fields
+        uiState.amazingThings.forEachIndexed { index, text ->
+            OutlinedTextField(
+                value = text,
+                readOnly = uiState.completed,
+                onValueChange = { newText ->
+                    onAmazingThingTextChange(index, newText)
+                },
 //                    label = { Text("${index + 1}") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = if (index == uiState.amazingThings.lastIndex) ImeAction.Done else ImeAction.Next
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White, // Sets the background color
-                        focusedContainerColor = Color.White // Sets the background color
-                    )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = if (index == uiState.amazingThings.lastIndex) ImeAction.Done else ImeAction.Next
+                ),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White, // Sets the background color
+                    focusedContainerColor = Color.White // Sets the background color
                 )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Improve day title
-            Text(
-                text = "Things to improve upon:",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 4.dp)
             )
-            // Improve day text fields
-            uiState.thingsToImprove.forEachIndexed { index, text ->
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { newText ->
-                        onThingToImproveTextChange(index, newText)
-                    },
-                    readOnly = uiState.completed,
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Improve day title
+        Text(
+            text = "Things to improve upon:",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        // Improve day text fields
+        uiState.thingsToImprove.forEachIndexed { index, text ->
+            OutlinedTextField(
+                value = text,
+                onValueChange = { newText ->
+                    onThingToImproveTextChange(index, newText)
+                },
+                readOnly = uiState.completed,
 //                    label = if (uiState.thingsToImprove.size > 1) {
 //                        { Text("${index + 1}") }
 //                    } else null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = if (index == uiState.thingsToImprove.lastIndex) ImeAction.Done else ImeAction.Next
-                    ),
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White, // Sets the background color
-                        focusedContainerColor = Color.White // Sets the background color
-                    )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = if (index == uiState.thingsToImprove.lastIndex) ImeAction.Done else ImeAction.Next
+                ),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White, // Sets the background color
+                    focusedContainerColor = Color.White // Sets the background color
                 )
-            }
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Save button
-            if (uiState.isToday) {
-                Button(
-                    enabled = !uiState.completed,
-                    onClick = {
-                        onSubmitClick(
-                            uiState.date,
-                            uiState.amazingThings,
-                            uiState.thingsToImprove
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = T5_RED,
+        // Save button
+        if (uiState.isToday && !uiState.completed) {
+            Button(
+                onClick = {
+                    onSubmitClick(
+                        uiState.date,
+                        uiState.amazingThings,
+                        uiState.thingsToImprove
                     )
-                ) {
-                    Text(
-                        text = "Submit",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color.White,
-                    )
-                }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = T5_RED,
+                )
+            ) {
+                Text(
+                    text = "Submit",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                )
             }
         }
     }
@@ -244,7 +317,6 @@ fun JournalScreenPreview() {
                 isLoading = false
             ),
             onDateClick = {},
-            onCloseClick = {},
             onAmazingThingTextChange = { _, _ -> },
             onThingToImproveTextChange = { _, _ -> },
             onSubmitClick = { _, _, _ -> },
