@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -101,33 +100,31 @@ private fun HomeScreen(
                 .background(
                     Brush.verticalGradient(
                         colorStops = arrayOf(
-                            0.8f to T5_RED,
+                            0.5f to T5_RED,
                             1f to T5_DARK,
                         )
                     )
                 )
-                .safeContentPadding()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
         ) {
             Text(
-                text = "Good morning,",
-                style = MaterialTheme.typography.displayMedium,
-                color = Color.White
-            )
-            Text(
-                text = "$name!",
-                color = Color.White,
+                text = "Good evening, $name!",
                 style = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.Black
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                modifier = Modifier.padding(top = 48.dp)
             )
             Button(
                 onClick = onPromptClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
             ) {
                 Text(
                     text = "evening prompt",
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = T5_RED,
                 )
             }
@@ -137,7 +134,7 @@ private fun HomeScreen(
 
 @Preview
 @Composable
-fun previewHomeScreen() {
+fun PreviewHomeScreen() {
     HomeScreen(
         name = "Varun",
         onPromptClick = {},
