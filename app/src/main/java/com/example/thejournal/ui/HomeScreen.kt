@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thejournal.R
@@ -115,9 +116,9 @@ private fun HomeScreen(
             )
             Text(
                 text = "$name!",
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Black
             )
             Button(
                 onClick = onPromptClick,
@@ -127,9 +128,20 @@ private fun HomeScreen(
                 Text(
                     text = "evening prompt",
                     style = MaterialTheme.typography.titleLarge,
-                    color = T5_RED
+                    color = T5_RED,
                 )
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun previewHomeScreen() {
+    HomeScreen(
+        name = "Varun",
+        onPromptClick = {},
+        onNavBarItemClick = {},
+        modifier = Modifier
+    )
 }
