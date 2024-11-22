@@ -52,7 +52,7 @@ open class JournalViewModel @Inject constructor(
                     date = date,
                     completed = false,
                     amazingThings = listOf("", "", ""),
-                    thingsToImprove = listOf(""),
+                    thingsToImprove = listOf("", ""),
                     isToday = today,
                     isLoading = false
                 )
