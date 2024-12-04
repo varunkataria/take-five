@@ -52,8 +52,7 @@ fun CalendarTitle(
         val formattedMonth = currentMonth.format(formatter)
 
         Text(
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = formattedMonth,
             fontSize = 22.sp,
             textAlign = TextAlign.Center,

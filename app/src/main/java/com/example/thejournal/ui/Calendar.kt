@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -66,7 +67,7 @@ fun Calendar(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
         selection = null
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         CalendarTitle(
             currentMonth = visibleMonth.yearMonth,
             goToPrevious = {
