@@ -23,4 +23,9 @@ interface JournalEntryDao {
     @Query("SELECT * FROM journal_entries WHERE date = :date")
     @TypeConverters(Converters::class)
     suspend fun getEntryByDate(date: LocalDate): JournalEntryWithDetails?
+
+    @Transaction
+    @Query("SELECT * FROM journal_entries")
+    @TypeConverters(Converters::class)
+    suspend fun getAllJournalEntries(): List<JournalEntryWithDetails>
 }

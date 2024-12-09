@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +25,6 @@ import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
@@ -42,15 +39,22 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
+/**
+ * Calendar that shows completed entries and one can select a previous date to read entries from
+ */
 @Composable
-fun Calendar(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
+fun Calendar(
+    completedDates: List<LocalDate>?,
+    onDateClick: (LocalDate) -> Unit,
+    onCalendarNavigationClick: (YearMonth) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val coroutineScope = rememberCoroutineScope()
 
     val today = remember { LocalDate.now() }
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(120) }
     val endMonth = remember { currentMonth.plusMonths(120) }
-    var selection by remember { mutableStateOf<CalendarDay?>(null) }
     val daysOfWeek = remember { daysOfWeek() }
 
     val state = rememberCalendarState(
@@ -62,22 +66,21 @@ fun Calendar(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
     )
     val visibleMonth = rememberFirstCompletelyVisibleMonth(state)
 
-    LaunchedEffect(visibleMonth) {
-        // Clear selection if we scroll to a new month.
-        selection = null
-    }
-
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         CalendarTitle(
             currentMonth = visibleMonth.yearMonth,
             goToPrevious = {
+                val previousMonth = state.firstVisibleMonth.yearMonth.previousMonth
                 coroutineScope.launch {
-                    state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)
+                    state.animateScrollToMonth(previousMonth)
+                    onCalendarNavigationClick(previousMonth)
                 }
             },
             goToNext = {
+                val nextMonth = state.firstVisibleMonth.yearMonth.nextMonth
                 coroutineScope.launch {
-                    state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
+                    state.animateScrollToMonth(nextMonth)
+                    onCalendarNavigationClick(nextMonth)
                 }
             },
         )
@@ -87,8 +90,9 @@ fun Calendar(onDateClick: (LocalDate) -> Unit, modifier: Modifier = Modifier) {
             state = state,
             dayContent = { day ->
                 val isSelectable = day.position == DayPosition.MonthDate
+                val isCompleted = completedDates?.contains(day.date) ?: false
                 val isToday = day.position == DayPosition.MonthDate && day.date == today
-                Day(day, isSelectable, isToday, onDateClick)
+                Day(day, isSelectable, isToday, isCompleted, onDateClick)
             },
             monthHeader = {
                 DaysOfWeekHeader(
@@ -143,7 +147,9 @@ private fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarM
 fun CalendarScreenPreview() {
     TheJournalTheme {
         Calendar(
-            onDateClick = {}
+            completedDates = emptyList(),
+            onDateClick = {},
+            onCalendarNavigationClick = {}
         )
     }
 }

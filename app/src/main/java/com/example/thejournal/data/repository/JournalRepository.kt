@@ -13,7 +13,7 @@ import javax.inject.Singleton
  * Repository for managing journal entries. This repository abstracts the data layer
  * and provides a clean API for data access to the rest of the app.
  *
- * Because minimal logic is needed, you injecting the DAO directly into the repository rather than DataSource
+ * Because minimal logic is needed, injecting the DAO directly into the repository rather than DataSource
  *
  * @property journalEntryDao The DAO for accessing journal entries and related entities.
  */
@@ -45,5 +45,14 @@ class JournalRepository @Inject constructor(
      */
     suspend fun getJournalEntryByDate(date: LocalDate): JournalEntryWithDetails? {
         return journalEntryDao.getEntryByDate(date)
+    }
+
+    /**
+     * Retrieve all completed journal entries.
+     *
+     * @return A list containing all completed JournalEntryWithDetails
+     */
+    suspend fun getAllJournalEntries(): List<JournalEntryWithDetails> {
+        return journalEntryDao.getAllJournalEntries()
     }
 }
