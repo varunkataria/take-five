@@ -1,11 +1,17 @@
 package com.example.thejournal.ui
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,7 +24,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -57,6 +70,20 @@ private fun HomeScreen(
     onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier
 ) {
+//    // Trigger the animation when the screen is opened
+//    var triggerAnimation by remember { mutableStateOf(false) }
+//
+//    // Animate the offsetY based on triggerAnimation
+//    val offsetY by animateFloatAsState(
+//        targetValue = if (triggerAnimation) 0f else 32f, // Move text 32 pixels up
+//        animationSpec = tween(durationMillis = 500) // Duration of the animation
+//    )
+//
+//    // Launch the animation effect when the screen is first loaded
+//    LaunchedEffect(Unit) {
+//        triggerAnimation = true
+//    }
+
     Scaffold(
         modifier = modifier.background(T5_RED),
         topBar = {
@@ -83,12 +110,20 @@ private fun HomeScreen(
                         selected = false,
                         onClick = { onNavBarItemClick(bottomNavRoute.route) },
                         icon = {
-                            Icon(
-                                imageVector = bottomNavRoute.icon,
-                                contentDescription = bottomNavRoute.name,
-                                tint = Color.White
-                            )
-                        }
+                            Box(
+                                modifier = Modifier
+                                    .height(150.dp)
+                                    .fillMaxWidth(0.9f)
+                                    .clip(RoundedCornerShape(16.dp)), // Adds rounded corners
+                                contentAlignment = Alignment.Center // Centers the icon
+                            ) {
+                                Icon(
+                                    imageVector = bottomNavRoute.icon,
+                                    contentDescription = bottomNavRoute.name,
+                                    tint = Color.White
+                                )
+                            }
+                        },
                     )
                 }
             }
@@ -105,6 +140,7 @@ private fun HomeScreen(
                         )
                     )
                 )
+//                .offset(y = offsetY.dp)
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
         ) {
