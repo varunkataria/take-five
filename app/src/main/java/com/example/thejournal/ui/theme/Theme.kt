@@ -51,7 +51,7 @@ fun TheJournalTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = darkerGrotesqueTypography,
+        typography = poppinsTypography,
         content = content
     )
 }
