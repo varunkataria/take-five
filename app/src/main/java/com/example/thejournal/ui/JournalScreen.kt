@@ -1,16 +1,15 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.font.FontWeight
@@ -43,17 +42,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thejournal.ui.theme.T5_DARK
+import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_RED
+import com.example.thejournal.ui.theme.T5_WHITE
 import com.example.thejournal.ui.theme.TheJournalTheme
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /**
  * Evening Journal entry screen
  */
 @Composable
 fun JournalScreen(
-    onDateClick: () -> Unit,
     onCloseClick: () -> Unit,
     isBottomSheet: Boolean,
     modifier: Modifier = Modifier,
@@ -63,7 +62,6 @@ fun JournalScreen(
     if (isBottomSheet) {
         JournalBottomSheet(
             uiState = uiState,
-            onDateClick = onDateClick,
             onCloseClick = onCloseClick,
             onAmazingThingTextChange = viewModel::updateAmazingThing,
             onThingToImproveTextChange = viewModel::updateThingToImprove,
@@ -73,7 +71,6 @@ fun JournalScreen(
     } else {
         JournalFullScreen(
             uiState = uiState,
-            onDateClick = onDateClick,
             onCloseClick = onCloseClick,
             onAmazingThingTextChange = viewModel::updateAmazingThing,
             onThingToImproveTextChange = viewModel::updateThingToImprove,
@@ -87,7 +84,6 @@ fun JournalScreen(
 @Composable
 private fun JournalBottomSheet(
     uiState: JournalUiState,
-    onDateClick: () -> Unit,
     onCloseClick: () -> Unit,
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
@@ -107,7 +103,6 @@ private fun JournalBottomSheet(
             ) {
                 JournalScreen(
                     uiState = uiState,
-                    onDateClick = onDateClick,
                     onAmazingThingTextChange = onAmazingThingTextChange,
                     onThingToImproveTextChange = onThingToImproveTextChange,
                     onSubmitClick = onSubmitClick,
@@ -122,7 +117,6 @@ private fun JournalBottomSheet(
 @Composable
 private fun JournalFullScreen(
     uiState: JournalUiState,
-    onDateClick: () -> Unit,
     onCloseClick: () -> Unit,
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
@@ -131,15 +125,15 @@ private fun JournalFullScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        containerColor = T5_DARK,
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
                         text = "Evening Prompt",
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = T5_WHITE
                     )
                 },
                 navigationIcon = {
@@ -147,19 +141,18 @@ private fun JournalFullScreen(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = T5_RED
+                            tint = T5_WHITE
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = T5_DARK // Ensure the top bar is also blue
+                    containerColor = T5_DARK_BLUE // Ensure the top bar is also blue
                 )
             )
         }
     ) { paddingValues ->
         JournalScreen(
             uiState = uiState,
-            onDateClick = onDateClick,
             onAmazingThingTextChange = onAmazingThingTextChange,
             onThingToImproveTextChange = onThingToImproveTextChange,
             onSubmitClick = onSubmitClick,
@@ -174,7 +167,6 @@ private fun JournalFullScreen(
 @Composable
 private fun JournalScreen(
     uiState: JournalUiState,
-    onDateClick: () -> Unit,
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
     onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
@@ -185,37 +177,31 @@ private fun JournalScreen(
     Column(
         modifier = modifier
             .verticalScroll(scrollState)
-            .background(T5_DARK)
+            .background(
+                Brush.verticalGradient(
+                    colorStops = arrayOf(
+                        0.4f to T5_DARK_BLUE,
+                        1f to T5_RED,
+                    )
+                )
+            )
             .imePadding()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 32.dp)
     ) {
-
-        // Date
-        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-        val formattedDate = uiState.date.format(formatter)
-
-        Text(
-            text = formattedDate,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.clickable { onDateClick() }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Amazing things title
         Text(
             text = "Good things that happened today:",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 4.dp)
+            color = T5_WHITE,
+            modifier = Modifier.padding(top = 32.dp, bottom = 4.dp)
         )
         // Amazing things text fields
         uiState.amazingThings.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
+                minLines = 2,
                 readOnly = uiState.completed,
                 onValueChange = { newText ->
                     onAmazingThingTextChange(index, newText)
@@ -228,26 +214,26 @@ private fun JournalScreen(
                     imeAction = if (index == uiState.amazingThings.lastIndex) ImeAction.Done else ImeAction.Next
                 ),
                 colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White, // Sets the background color
-                    focusedContainerColor = Color.White // Sets the background color
-                )
+                    unfocusedContainerColor = T5_WHITE, // Sets the background color
+                    focusedContainerColor = T5_WHITE // Sets the background color
+                ),
+                shape = RoundedCornerShape(8.dp)
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Improve day title
         Text(
             text = "Things to improve upon:",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 4.dp)
+            color = T5_WHITE,
+            modifier = Modifier.padding(top = 32.dp, bottom = 4.dp)
         )
         // Improve day text fields
         uiState.thingsToImprove.forEachIndexed { index, text ->
             OutlinedTextField(
                 value = text,
+                minLines = 2,
                 onValueChange = { newText ->
                     onThingToImproveTextChange(index, newText)
                 },
@@ -257,18 +243,17 @@ private fun JournalScreen(
 //                    } else null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                    .padding(top = 4.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = if (index == uiState.thingsToImprove.lastIndex) ImeAction.Done else ImeAction.Next
                 ),
                 colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White, // Sets the background color
-                    focusedContainerColor = Color.White // Sets the background color
-                )
+                    unfocusedContainerColor = T5_WHITE, // Sets the background color
+                    focusedContainerColor = T5_WHITE // Sets the background color
+                ),
+                shape = RoundedCornerShape(8.dp)
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Save button
         if (uiState.isToday && !uiState.completed) {
@@ -280,15 +265,17 @@ private fun JournalScreen(
                         uiState.thingsToImprove
                     )
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 64.dp)
+                    .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = T5_RED,
+                    containerColor = T5_DARK_BLUE,
                 )
             ) {
                 Text(
                     text = "Submit",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = T5_WHITE,
                 )
             }
         }
@@ -297,7 +284,6 @@ private fun JournalScreen(
 
 @Preview(
     showBackground = true,
-    showSystemUi = true,
     device = Devices.PIXEL_7A
 )
 @Composable
@@ -316,7 +302,6 @@ fun JournalScreenPreview() {
                 isToday = true,
                 isLoading = false
             ),
-            onDateClick = {},
             onAmazingThingTextChange = { _, _ -> },
             onThingToImproveTextChange = { _, _ -> },
             onSubmitClick = { _, _, _ -> },

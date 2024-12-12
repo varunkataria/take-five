@@ -23,7 +23,6 @@ fun JournalNavigation() {
         composable<Journal> { backStackEntry ->
             val journal = backStackEntry.toRoute<Journal>()
             JournalScreen(
-                onDateClick = { navController.navigate(route = Archive) },
                 onCloseClick = { navController.popBackStack() },
                 isBottomSheet = journal.isBottomSheet
             )
