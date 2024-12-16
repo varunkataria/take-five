@@ -1,19 +1,20 @@
 package com.example.thejournal.ui
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,24 +25,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thejournal.R
-import com.example.thejournal.ui.theme.T5_DARK
+import com.example.thejournal.ui.theme.T5_DARK_BLUE
+import com.example.thejournal.ui.theme.T5_MEDIUM_BLUE
 import com.example.thejournal.ui.theme.T5_RED
+import com.example.thejournal.ui.theme.T5_WHITE
 
 /**
  * Home screen
@@ -85,7 +86,7 @@ private fun HomeScreen(
 //    }
 
     Scaffold(
-        modifier = modifier.background(T5_RED),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = {
@@ -93,7 +94,7 @@ private fun HomeScreen(
                         painter = painterResource(id = R.drawable.take_five_logo), // Replace with your logo's resource ID
                         contentDescription = "take five",
                         modifier = Modifier.size(125.dp), // Adjust size as needed
-                        tint = T5_DARK // Tint the logo red
+                        tint = T5_RED // Tint the logo red
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -135,8 +136,8 @@ private fun HomeScreen(
                 .background(
                     Brush.verticalGradient(
                         colorStops = arrayOf(
-                            0.5f to T5_RED,
-                            1f to T5_DARK,
+                            0.4f to T5_MEDIUM_BLUE,
+                            1f to T5_DARK_BLUE,
                         )
                     )
                 )
@@ -145,28 +146,57 @@ private fun HomeScreen(
                 .padding(horizontal = 16.dp),
         ) {
             Text(
-                text = "Good evening, $name!",
-                style = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White,
+                text = buildAnnotatedString {
+                    append("Good evening, ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Black)) {
+                        append(name)
+                        append("!")
+                    }
+                },
+                style = MaterialTheme.typography.displayMedium,
+                color = T5_WHITE,
                 modifier = Modifier.padding(top = 48.dp)
             )
-            Button(
-                onClick = onPromptClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp)
+                    .padding(top = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Gap between boxes
             ) {
-                Text(
-                    text = "evening prompt",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = T5_RED,
-                )
+                PromptBox("morning prompt", Modifier.weight(1f))
+                PromptBox("evening prompt", Modifier.weight(1f), onPromptClick)
             }
         }
     }
 }
+
+@Composable
+private fun PromptBox(title: String, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick?.invoke() }
+            .background(T5_WHITE.copy(alpha = 0.5f))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                color = T5_WHITE
+            )
+            Icon(
+                imageVector = Icons.Outlined.CheckCircle,
+                contentDescription = title,
+                tint = T5_WHITE,
+                modifier = Modifier.align(Alignment.End)
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable
