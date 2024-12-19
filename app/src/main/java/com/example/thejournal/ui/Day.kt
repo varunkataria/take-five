@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.thejournal.ui.theme.T5_DARK
+import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.core.CalendarDay
@@ -51,7 +51,7 @@ fun Day(
                 .padding(8.dp)
                 .border(
                     width = if (isCompleted) 4.dp else 0.dp,
-                    color = if (isCompleted) T5_DARK else Color.Transparent,
+                    color = if (isCompleted) T5_DARK_BLUE else Color.Transparent,
                     shape = RoundedCornerShape(10.dp)
                 )
         ) {
