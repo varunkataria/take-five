@@ -1,6 +1,7 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,6 +27,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,19 +58,21 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
-        name = viewModel.name,
+        name = uiState.name,
+        isEveningCompleted = uiState.isEveningCompleted,
         onPromptClick = onPromptClick,
         onNavBarItemClick = onNavBarItemClick,
         modifier = modifier
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     name: String,
+    isEveningCompleted: Boolean,
     onPromptClick: () -> Unit,
     onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier
@@ -164,20 +170,30 @@ private fun HomeScreen(
                     .padding(top = 32.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp), // Gap between boxes
             ) {
-                PromptBox("morning prompt", Modifier.weight(1f))
-                PromptBox("evening prompt", Modifier.weight(1f), onPromptClick)
+                PromptBox("morning prompt", false, Modifier.weight(1f))
+                PromptBox("evening prompt", isEveningCompleted, Modifier.weight(1f), onPromptClick)
             }
         }
     }
 }
 
 @Composable
-private fun PromptBox(title: String, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+private fun PromptBox(
+    title: String,
+    completed: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .clickable { onClick?.invoke() }
-            .background(T5_WHITE.copy(alpha = 0.5f))
+            .background(if (completed) T5_WHITE else T5_WHITE.copy(alpha = 0.5f))
+            .border(
+                width = if (completed) 1.dp else 0.dp,
+                color = if (completed) T5_RED else Color.Transparent,
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -185,12 +201,12 @@ private fun PromptBox(title: String, modifier: Modifier = Modifier, onClick: (()
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = T5_WHITE
+                color = if (completed) T5_RED else T5_WHITE
             )
             Icon(
-                imageVector = Icons.Outlined.CheckCircle,
+                imageVector = if (completed) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
                 contentDescription = title,
-                tint = T5_WHITE,
+                tint = if (completed) T5_RED else T5_WHITE,
                 modifier = Modifier.align(Alignment.End)
             )
         }
@@ -203,6 +219,7 @@ private fun PromptBox(title: String, modifier: Modifier = Modifier, onClick: (()
 fun PreviewHomeScreen() {
     HomeScreen(
         name = "Varun",
+        isEveningCompleted = true,
         onPromptClick = {},
         onNavBarItemClick = {},
         modifier = Modifier
