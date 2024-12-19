@@ -1,6 +1,7 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -153,8 +154,11 @@ private fun JournalEntryBox(
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onDateClick(entry.journalEntry.date) }
-            .background(
-                color = T5_WHITE
+            .background(color = T5_WHITE)
+            .border(
+                width = 1.dp,
+                color = T5_RED.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp)
             )
     ) {
         Column {
