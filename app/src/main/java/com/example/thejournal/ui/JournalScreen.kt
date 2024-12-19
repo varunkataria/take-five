@@ -1,11 +1,10 @@
 package com.example.thejournal.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.font.FontWeight
@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.thejournal.ui.theme.T5_DARK
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.T5_WHITE
@@ -88,18 +87,26 @@ private fun JournalBottomSheet(
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
     onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     ModalBottomSheet(
         onDismissRequest = { onCloseClick() },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = T5_DARK,
+        containerColor = T5_DARK_BLUE,
         content = {
-            Column(
-                modifier = Modifier
+            Box(
+                modifier = modifier
+                    .background(
+                        Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0.4f to T5_DARK_BLUE,
+                                1f to T5_RED
+                            )
+                        )
+                    )
+                    .padding(bottom = 16.dp)
                     .wrapContentHeight() // Ensure the bottom sheet wraps the content height
                     .nestedScroll(rememberNestedScrollInteropConnection())
-//                    .padding(16.dp) // Optional: add padding to the sheet
             ) {
                 JournalScreen(
                     uiState = uiState,
@@ -109,7 +116,7 @@ private fun JournalBottomSheet(
                     modifier = modifier
                 )
             }
-        }
+        },
     )
 }
 
@@ -125,7 +132,6 @@ private fun JournalFullScreen(
 ) {
     Scaffold(
         modifier = modifier,
-        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -146,20 +152,31 @@ private fun JournalFullScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = T5_DARK_BLUE // Ensure the top bar is also blue
+                    containerColor = Color.Transparent // Ensure the top bar is also blue
                 )
             )
         }
     ) { paddingValues ->
-        JournalScreen(
-            uiState = uiState,
-            onAmazingThingTextChange = onAmazingThingTextChange,
-            onThingToImproveTextChange = onThingToImproveTextChange,
-            onSubmitClick = onSubmitClick,
+        Box(
             modifier = modifier
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0.4f to T5_DARK_BLUE,
+                            1f to T5_RED
+                        )
+                    )
+                )
                 .padding(paddingValues)
-        )
+        ) {
+            JournalScreen(
+                uiState = uiState,
+                onAmazingThingTextChange = onAmazingThingTextChange,
+                onThingToImproveTextChange = onThingToImproveTextChange,
+                onSubmitClick = onSubmitClick
+            )
+        }
     }
 }
 
@@ -170,25 +187,15 @@ private fun JournalScreen(
     onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
     onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
     onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState() // State for scrolling
 
     Column(
         modifier = modifier
             .verticalScroll(scrollState)
-            .background(
-                Brush.verticalGradient(
-                    colorStops = arrayOf(
-                        0.4f to T5_DARK_BLUE,
-                        1f to T5_RED,
-                    )
-                )
-            )
-            .imePadding()
             .padding(horizontal = 32.dp)
     ) {
-
         // Amazing things title
         Text(
             text = "Good things that happened today:",
