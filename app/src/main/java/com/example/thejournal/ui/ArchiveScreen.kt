@@ -1,6 +1,15 @@
 package com.example.thejournal.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -10,18 +19,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.ui.theme.T5_DARK_BLUE
+import com.example.thejournal.ui.theme.T5_RED
+import com.example.thejournal.ui.theme.T5_WHITE
 import com.example.thejournal.ui.theme.TheJournalTheme
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
 /**
  * Archive screen to view calendar and past entries
@@ -36,6 +55,7 @@ fun ArchiveScreen(
     val uiState by viewModel.uiState.collectAsState()
     ArchiveScreen(
         completedDates = uiState.completedDates,
+        journalEntries = uiState.journalEntries,
         onDateClick = onDateClick,
         onCalendarNavigationClick = viewModel::onCalendarNavigationClick,
         onCloseClick = onCloseClick,
@@ -47,6 +67,7 @@ fun ArchiveScreen(
 @Composable
 private fun ArchiveScreen(
     completedDates: List<LocalDate>?,
+    journalEntries: List<JournalEntryWithDetails>,
     onDateClick: (LocalDate) -> Unit,
     onCalendarNavigationClick: (YearMonth) -> Unit,
     onCloseClick: () -> Unit,
@@ -59,32 +80,102 @@ private fun ArchiveScreen(
                 title = {
                     Text(
                         text = "Archive",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = T5_DARK_BLUE
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onCloseClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Close"
+                            contentDescription = "Close",
+                            tint = T5_DARK_BLUE
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent // Ensure the top bar is also blue
+                )
             )
         }
 
     ) { paddingValues ->
-        Calendar(
-            completedDates = completedDates,
-            onDateClick = onDateClick,
-            onCalendarNavigationClick = onCalendarNavigationClick,
-            modifier = modifier
+        LazyColumn(
+            modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colorStops = arrayOf(
+                            0.5f to T5_WHITE,
+                            1f to T5_RED,
+                        )
+                    )
+                )
                 .padding(horizontal = 16.dp)
                 .padding(paddingValues)
-        )
+        ) {
+            item {
+                Calendar(
+                    completedDates = completedDates,
+                    onDateClick = onDateClick,
+                    onCalendarNavigationClick = onCalendarNavigationClick
+                )
+            }
+            item {
+                Text(
+                    text = "Recent Entries",
+                    modifier = Modifier.padding(top = 32.dp, bottom = 8.dp),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = T5_RED
+                )
+            }
+            items(journalEntries) { entry ->
+                JournalEntryBox(
+                    onDateClick = onDateClick,
+                    entry = entry
+                )
+            }
+        }
     }
+}
 
+@Composable
+private fun JournalEntryBox(
+    onDateClick: (LocalDate) -> Unit,
+    entry: JournalEntryWithDetails,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onDateClick(entry.journalEntry.date) }
+            .background(
+                color = T5_WHITE
+            )
+    ) {
+        Column {
+            val formattedDate =
+                entry.journalEntry.date.format(DateTimeFormatter.ofPattern("M/d/yyyy"))
+            Text(
+                text = "$formattedDate: Evening",
+                modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = T5_RED
+            )
+            Text(
+                text = entry.amazingThings[0].description,
+                modifier = modifier.padding(top = 4.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = T5_DARK_BLUE
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_7A)
@@ -92,7 +183,10 @@ private fun ArchiveScreen(
 fun ArchiveScreenPreview() {
     TheJournalTheme {
         ArchiveScreen(
+            completedDates = emptyList(),
+            journalEntries = emptyList(),
             onDateClick = {},
+            onCalendarNavigationClick = {},
             onCloseClick = {}
         )
     }
