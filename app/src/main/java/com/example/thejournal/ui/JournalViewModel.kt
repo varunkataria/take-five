@@ -36,31 +36,36 @@ open class JournalViewModel @Inject constructor(
     private fun loadJournalEntryForDate(date: LocalDate) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            val entryWithDetails = getJournalEntryByDateUseCase.execute(date)
-            val today = LocalDate.now() == date
-            if (entryWithDetails != null) {
-                _uiState.value = _uiState.value.copy(
-                    date = date,
-                    completed = entryWithDetails.journalEntry.completed,
-                    amazingThings = entryWithDetails.amazingThings.map { it.description },
-                    thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
-                    isToday = today,
-                    isLoading = false
-                )
-            } else {
-                _uiState.value = _uiState.value.copy(
-                    date = date,
-                    completed = false,
-                    amazingThings = listOf("", "", ""),
-                    thingsToImprove = listOf("", ""),
-                    isToday = today,
-                    isLoading = false
-                )
+            getJournalEntryByDateUseCase.execute(date).collect { entryWithDetails ->
+                val today = LocalDate.now() == date
+                if (entryWithDetails != null) {
+                    _uiState.value = _uiState.value.copy(
+                        date = date,
+                        completed = entryWithDetails.journalEntry.completed,
+                        amazingThings = entryWithDetails.amazingThings.map { it.description },
+                        thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
+                        isToday = today,
+                        isLoading = false
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        date = date,
+                        completed = false,
+                        amazingThings = listOf("", "", ""),
+                        thingsToImprove = listOf("", ""),
+                        isToday = today,
+                        isLoading = false
+                    )
+                }
             }
         }
     }
 
-    fun submitJournalEntry(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
+    fun submitJournalEntry(
+        date: LocalDate,
+        amazingThings: List<String>,
+        thingsToImprove: List<String>
+    ) {
         viewModelScope.launch {
             addJournalEntryUseCase.execute(
                 date = date,

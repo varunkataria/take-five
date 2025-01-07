@@ -5,6 +5,7 @@ import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.data.JournalEntryDao
 import com.example.thejournal.data.JournalEntryWithDetails
 import com.example.thejournal.data.ThingToImprove
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,7 +44,7 @@ class JournalRepository @Inject constructor(
      *
      * @return A JournalEntryWithDetails object containing the journal entry and related entities.
      */
-    suspend fun getJournalEntryByDate(date: LocalDate): JournalEntryWithDetails? {
+    fun getJournalEntryByDate(date: LocalDate): Flow<JournalEntryWithDetails?> {
         return journalEntryDao.getEntryByDate(date)
     }
 

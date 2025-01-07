@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.TypeConverters
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
@@ -22,7 +23,7 @@ interface JournalEntryDao {
     @Transaction
     @Query("SELECT * FROM journal_entries WHERE date = :date")
     @TypeConverters(Converters::class)
-    suspend fun getEntryByDate(date: LocalDate): JournalEntryWithDetails?
+    fun getEntryByDate(date: LocalDate): Flow<JournalEntryWithDetails?>
 
     @Transaction
     @Query("SELECT * FROM journal_entries")
