@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.TheJournal" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.App.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/t5_medium_blue</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/take_five_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.TheJournal</item>
+    </style>
+
 </resources>

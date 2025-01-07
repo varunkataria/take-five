@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="t5_white">#ffffffff</color>
+    <color name="t5_light_blue">#ffc3e1f0</color>
+    <color name="t5_medium_blue">#ff699ebe</color>
+    <color name="t5_dark_blue">#ff15253c</color>
+    <color name="t5_red">#fffe3500</color>
 </resources>

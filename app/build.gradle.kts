@@ -88,4 +88,7 @@ dependencies {
 
     // The compose calendar library for Android
     implementation(libs.calendar)
+
+    // Splash screen
+    implementation(libs.androidx.core.splashscreen)
 }
