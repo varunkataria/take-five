@@ -2,7 +2,7 @@ package com.example.thejournal.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.domain.GetAllCompletedJournalEntriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +47,7 @@ open class ArchiveViewModel @Inject constructor(
     }
 
     private fun filterEntriesByDate(
-        entries: List<JournalEntryWithDetails>,
+        entries: List<EveningEntry>,
         yearMonth: YearMonth
     ): List<LocalDate> {
         val filteredEntries = entries.filter { entry ->

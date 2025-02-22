@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.T5_WHITE
@@ -68,7 +68,7 @@ fun ArchiveScreen(
 @Composable
 private fun ArchiveScreen(
     completedDates: List<LocalDate>?,
-    journalEntries: List<JournalEntryWithDetails>,
+    journalEntries: List<EveningEntry>,
     onDateClick: (LocalDate) -> Unit,
     onCalendarNavigationClick: (YearMonth) -> Unit,
     onCloseClick: () -> Unit,
@@ -145,7 +145,7 @@ private fun ArchiveScreen(
 @Composable
 private fun JournalEntryBox(
     onDateClick: (LocalDate) -> Unit,
-    entry: JournalEntryWithDetails,
+    entry: EveningEntry,
     modifier: Modifier = Modifier
 ) {
     Box(

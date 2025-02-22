@@ -22,13 +22,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -41,7 +40,10 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.thejournal.data.SubmissionItemType
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
+import com.example.thejournal.ui.theme.T5_LIGHT_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.T5_WHITE
 import com.example.thejournal.ui.theme.TheJournalTheme
@@ -57,22 +59,29 @@ fun JournalScreen(
     modifier: Modifier = Modifier,
     viewModel: JournalViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isMorningEntry = uiState.isMorningEntry
+    val primaryColor = if (isMorningEntry) T5_LIGHT_BLUE else T5_DARK_BLUE
+    val accentColor = if (isMorningEntry) T5_DARK_BLUE else T5_WHITE
     if (isBottomSheet) {
         JournalBottomSheet(
             uiState = uiState,
+            isMorningEntry = isMorningEntry,
+            primaryColor = primaryColor,
+            accentColor = accentColor,
             onCloseClick = onCloseClick,
-            onAmazingThingTextChange = viewModel::updateAmazingThing,
-            onThingToImproveTextChange = viewModel::updateThingToImprove,
+            onTextChange = viewModel::updateSubmissionItem,
             onSubmitClick = viewModel::submitJournalEntry,
             modifier = modifier
         )
     } else {
         JournalFullScreen(
             uiState = uiState,
+            isMorningEntry = isMorningEntry,
+            primaryColor = primaryColor,
+            accentColor = accentColor,
             onCloseClick = onCloseClick,
-            onAmazingThingTextChange = viewModel::updateAmazingThing,
-            onThingToImproveTextChange = viewModel::updateThingToImprove,
+            onTextChange = viewModel::updateSubmissionItem,
             onSubmitClick = viewModel::submitJournalEntry,
             modifier = modifier
         )
@@ -83,23 +92,25 @@ fun JournalScreen(
 @Composable
 private fun JournalBottomSheet(
     uiState: JournalUiState,
+    isMorningEntry: Boolean,
+    primaryColor: Color,
+    accentColor: Color,
     onCloseClick: () -> Unit,
-    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
-    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
-    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    onTextChange: (type: SubmissionItemType, index: Int, newText: String) -> Unit,
+    onSubmitClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ModalBottomSheet(
         onDismissRequest = { onCloseClick() },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = T5_DARK_BLUE,
+        containerColor = primaryColor,
         content = {
             Box(
                 modifier = modifier
                     .background(
                         Brush.verticalGradient(
                             colorStops = arrayOf(
-                                0.4f to T5_DARK_BLUE,
+                                0.4f to primaryColor,
                                 1f to T5_RED
                             )
                         )
@@ -110,8 +121,10 @@ private fun JournalBottomSheet(
             ) {
                 JournalScreen(
                     uiState = uiState,
-                    onAmazingThingTextChange = onAmazingThingTextChange,
-                    onThingToImproveTextChange = onThingToImproveTextChange,
+                    isMorningEntry = isMorningEntry,
+                    primaryColor = primaryColor,
+                    accentColor = accentColor,
+                    onTextChange = onTextChange,
                     onSubmitClick = onSubmitClick,
                     modifier = modifier
                 )
@@ -124,10 +137,12 @@ private fun JournalBottomSheet(
 @Composable
 private fun JournalFullScreen(
     uiState: JournalUiState,
+    isMorningEntry: Boolean,
+    primaryColor: Color,
+    accentColor: Color,
     onCloseClick: () -> Unit,
-    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
-    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
-    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    onTextChange: (type: SubmissionItemType, index: Int, newText: String) -> Unit,
+    onSubmitClick: () -> Unit,
     modifier: Modifier
 ) {
     Scaffold(
@@ -136,10 +151,10 @@ private fun JournalFullScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Evening Prompt",
+                        text = if (isMorningEntry) "Morning Prompt" else "Evening Prompt",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = T5_WHITE
+                        color = accentColor
                     )
                 },
                 navigationIcon = {
@@ -147,7 +162,7 @@ private fun JournalFullScreen(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = T5_WHITE
+                            tint = accentColor
                         )
                     }
                 },
@@ -163,7 +178,7 @@ private fun JournalFullScreen(
                 .background(
                     Brush.verticalGradient(
                         colorStops = arrayOf(
-                            0.4f to T5_DARK_BLUE,
+                            0.4f to primaryColor,
                             1f to T5_RED
                         )
                     )
@@ -172,8 +187,10 @@ private fun JournalFullScreen(
         ) {
             JournalScreen(
                 uiState = uiState,
-                onAmazingThingTextChange = onAmazingThingTextChange,
-                onThingToImproveTextChange = onThingToImproveTextChange,
+                isMorningEntry = isMorningEntry,
+                primaryColor = primaryColor,
+                accentColor = accentColor,
+                onTextChange = onTextChange,
                 onSubmitClick = onSubmitClick
             )
         }
@@ -184,9 +201,11 @@ private fun JournalFullScreen(
 @Composable
 private fun JournalScreen(
     uiState: JournalUiState,
-    onAmazingThingTextChange: (index: Int, newText: String) -> Unit,
-    onThingToImproveTextChange: (index: Int, newText: String) -> Unit,
-    onSubmitClick: (date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) -> Unit,
+    isMorningEntry: Boolean,
+    primaryColor: Color,
+    accentColor: Color,
+    onTextChange: (type: SubmissionItemType, index: Int, newText: String) -> Unit,
+    onSubmitClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState() // State for scrolling
@@ -196,69 +215,47 @@ private fun JournalScreen(
             .verticalScroll(scrollState)
             .padding(horizontal = 32.dp)
     ) {
-        // Amazing things title
-        Text(
-            text = "Good things that happened today:",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            color = T5_WHITE,
-            modifier = Modifier.padding(top = 32.dp, bottom = 4.dp)
-        )
-        // Amazing things text fields
-        uiState.amazingThings.forEachIndexed { index, text ->
-            OutlinedTextField(
-                value = text,
-                minLines = 2,
-                readOnly = uiState.completed,
-                onValueChange = { newText ->
-                    onAmazingThingTextChange(index, newText)
-                },
-//                    label = { Text("${index + 1}") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = if (index == uiState.amazingThings.lastIndex) ImeAction.Done else ImeAction.Next
-                ),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = T5_WHITE, // Sets the background color
-                    focusedContainerColor = T5_WHITE // Sets the background color
-                ),
-                shape = RoundedCornerShape(8.dp)
+        if (isMorningEntry) {
+            SubmissionItemTextField(
+                title = "I am grateful for:",
+                values = uiState.gratefulThings,
+                completed = uiState.completed,
+                primaryColor = primaryColor,
+                accentColor = accentColor,
+                onTextChange = { index, newText ->
+                    onTextChange(SubmissionItemType.GRATEFUL_THING, index, newText)
+                }
             )
-        }
-
-        // Improve day title
-        Text(
-            text = "Things to improve upon:",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            color = T5_WHITE,
-            modifier = Modifier.padding(top = 32.dp, bottom = 4.dp)
-        )
-        // Improve day text fields
-        uiState.thingsToImprove.forEachIndexed { index, text ->
-            OutlinedTextField(
-                value = text,
-                minLines = 2,
-                onValueChange = { newText ->
-                    onThingToImproveTextChange(index, newText)
-                },
-                readOnly = uiState.completed,
-//                    label = if (uiState.thingsToImprove.size > 1) {
-//                        { Text("${index + 1}") }
-//                    } else null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = if (index == uiState.thingsToImprove.lastIndex) ImeAction.Done else ImeAction.Next
-                ),
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = T5_WHITE, // Sets the background color
-                    focusedContainerColor = T5_WHITE // Sets the background color
-                ),
-                shape = RoundedCornerShape(8.dp)
+            SubmissionItemTextField(
+                title = "My intentions for today are:",
+                values = uiState.intentions,
+                completed = uiState.completed,
+                primaryColor = primaryColor,
+                accentColor = accentColor,
+                onTextChange = { index, newText ->
+                    onTextChange(SubmissionItemType.INTENTION, index, newText)
+                }
+            )
+        } else {
+            SubmissionItemTextField(
+                title = "Good things that happened today:",
+                values = uiState.amazingThings,
+                completed = uiState.completed,
+                primaryColor = primaryColor,
+                accentColor = accentColor,
+                onTextChange = { index, newText ->
+                    onTextChange(SubmissionItemType.AMAZING_THING, index, newText)
+                }
+            )
+            SubmissionItemTextField(
+                title = "Things to improve upon:",
+                values = uiState.thingsToImprove,
+                completed = uiState.completed,
+                primaryColor = primaryColor,
+                accentColor = accentColor,
+                onTextChange = { index, newText ->
+                    onTextChange(SubmissionItemType.THING_TO_IMPROVE, index, newText)
+                }
             )
         }
 
@@ -266,26 +263,63 @@ private fun JournalScreen(
         if (uiState.isToday && !uiState.completed) {
             Button(
                 onClick = {
-                    onSubmitClick(
-                        uiState.date,
-                        uiState.amazingThings,
-                        uiState.thingsToImprove
-                    )
+                    onSubmitClick()
                 },
                 modifier = Modifier
                     .padding(top = 64.dp)
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = T5_DARK_BLUE,
+                    containerColor = primaryColor,
                 )
             ) {
                 Text(
                     text = "Submit",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = T5_WHITE,
+                    color = accentColor,
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SubmissionItemTextField(
+    title: String,
+    values: List<String>,
+    completed: Boolean,
+    primaryColor: Color,
+    accentColor: Color,
+    onTextChange: (Int, String) -> Unit
+) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+        color = accentColor,
+        modifier = Modifier.padding(top = 32.dp, bottom = 4.dp)
+    )
+
+    values.forEachIndexed { index, text ->
+        OutlinedTextField(
+            value = text,
+            minLines = 2,
+            readOnly = completed,
+            onValueChange = { newText ->
+                onTextChange(index, newText)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = if (index == values.lastIndex) ImeAction.Done else ImeAction.Next
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = T5_WHITE,
+                focusedContainerColor = T5_WHITE,
+                unfocusedBorderColor = T5_WHITE,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        )
     }
 }
 
@@ -298,6 +332,7 @@ fun JournalScreenPreview() {
     TheJournalTheme {
         JournalScreen(
             uiState = JournalUiState(
+                isMorningEntry = false,
                 completed = false,
                 date = LocalDate.now(),
                 amazingThings = listOf(
@@ -309,9 +344,11 @@ fun JournalScreenPreview() {
                 isToday = true,
                 isLoading = false
             ),
-            onAmazingThingTextChange = { _, _ -> },
-            onThingToImproveTextChange = { _, _ -> },
-            onSubmitClick = { _, _, _ -> },
+            isMorningEntry = false,
+            primaryColor = T5_DARK_BLUE,
+            accentColor = T5_WHITE,
+            onSubmitClick = {},
+            onTextChange = { _, _, _ -> },
             modifier = Modifier
         )
     }

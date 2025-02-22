@@ -5,5 +5,6 @@ package com.example.thejournal.ui
  */
 data class HomeUiState(
     val name: String = "",
+    val isMorningCompleted: Boolean = false,
     val isEveningCompleted: Boolean = false
 )

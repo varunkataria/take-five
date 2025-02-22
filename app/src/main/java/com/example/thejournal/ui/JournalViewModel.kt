@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.thejournal.data.EntryType
+import com.example.thejournal.data.SubmissionItemType
 import com.example.thejournal.domain.AddJournalEntryUseCase
 import com.example.thejournal.domain.GetJournalEntryByDateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,68 +25,93 @@ open class JournalViewModel @Inject constructor(
     private val getJournalEntryByDateUseCase: GetJournalEntryByDateUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(JournalUiState())
+    private val journal: Journal = savedStateHandle.toRoute()
+    private val date = journal.date?.let { LocalDate.parse(it) } ?: LocalDate.now()
+    private val entryType = journal.entryType
+
+    private val _uiState = MutableStateFlow(
+        JournalUiState(
+            isMorningEntry = entryType == EntryType.MORNING,
+            date = date,
+            isToday = LocalDate.now() == date
+        )
+    )
     val uiState: StateFlow<JournalUiState> = _uiState
 
-    private val journal: Journal = savedStateHandle.toRoute()
-
     init {
-        val date = journal.date?.let { LocalDate.parse(it) } ?: LocalDate.now()
-        loadJournalEntryForDate(date)
+        loadJournalEntryForDate(date, entryType)
     }
 
-    private fun loadJournalEntryForDate(date: LocalDate) {
+    private fun loadJournalEntryForDate(date: LocalDate, entryType: EntryType) {
         _uiState.value = _uiState.value.copy(isLoading = true)
         viewModelScope.launch {
-            getJournalEntryByDateUseCase.execute(date).collect { entryWithDetails ->
-                val today = LocalDate.now() == date
-                if (entryWithDetails != null) {
-                    _uiState.value = _uiState.value.copy(
-                        date = date,
-                        completed = entryWithDetails.journalEntry.completed,
-                        amazingThings = entryWithDetails.amazingThings.map { it.description },
-                        thingsToImprove = entryWithDetails.thingsToImprove.map { it.description },
-                        isToday = today,
-                        isLoading = false
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        date = date,
-                        completed = false,
-                        amazingThings = listOf("", "", ""),
-                        thingsToImprove = listOf("", ""),
-                        isToday = today,
-                        isLoading = false
-                    )
-                }
+            when (entryType) {
+                EntryType.MORNING -> getJournalEntryByDateUseCase.getMorningEntry(date)
+                    .collect { morningEntry ->
+                        morningEntry?.let {
+                            _uiState.value = _uiState.value.copy(
+                                completed = morningEntry.journalEntry.completed,
+                                intentions = morningEntry.intentions.map { it.description },
+                                gratefulThings = morningEntry.gratefulThings.map { it.description },
+                                isLoading = false
+                            )
+                        }
+                    }
+
+                EntryType.EVENING -> getJournalEntryByDateUseCase.getEveningEntry(date)
+                    .collect { eveningEntry ->
+                        eveningEntry?.let {
+                            _uiState.value = _uiState.value.copy(
+                                completed = eveningEntry.journalEntry.completed,
+                                amazingThings = eveningEntry.amazingThings.map { it.description },
+                                thingsToImprove = eveningEntry.thingsToImprove.map { it.description },
+                                isLoading = false
+                            )
+                        }
+                    }
             }
         }
     }
 
-    fun submitJournalEntry(
-        date: LocalDate,
-        amazingThings: List<String>,
-        thingsToImprove: List<String>
-    ) {
+    fun submitJournalEntry() {
         viewModelScope.launch {
-            addJournalEntryUseCase.execute(
-                date = date,
-                amazingThings = amazingThings,
-                thingsToImprove = thingsToImprove
-            )
+            if (_uiState.value.isMorningEntry) {
+                addJournalEntryUseCase.addMorningEntry(
+                    date = uiState.value.date,
+                    intentions = uiState.value.intentions,
+                    gratefulThings = uiState.value.gratefulThings,
+                )
+            } else {
+                addJournalEntryUseCase.addEveningEntry(
+                    date = uiState.value.date,
+                    amazingThings = uiState.value.amazingThings,
+                    thingsToImprove = uiState.value.thingsToImprove,
+                )
+            }
             _uiState.value = _uiState.value.copy(completed = true)
         }
     }
 
-    fun updateAmazingThing(index: Int, newText: String) {
-        val updatedAmazingThings = _uiState.value.amazingThings.toMutableList()
-        updatedAmazingThings[index] = newText
-        _uiState.value = _uiState.value.copy(amazingThings = updatedAmazingThings)
-    }
+    fun updateSubmissionItem(type: SubmissionItemType, index: Int, newText: String) {
+        _uiState.value = _uiState.value.run {
+            when (type) {
+                SubmissionItemType.AMAZING_THING -> copy(
+                    amazingThings = amazingThings.toMutableList().apply { this[index] = newText }
+                )
 
-    fun updateThingToImprove(index: Int, newText: String) {
-        val updatedThingsToImprove = _uiState.value.thingsToImprove.toMutableList()
-        updatedThingsToImprove[index] = newText
-        _uiState.value = _uiState.value.copy(thingsToImprove = updatedThingsToImprove)
+                SubmissionItemType.THING_TO_IMPROVE -> copy(
+                    thingsToImprove = thingsToImprove.toMutableList()
+                        .apply { this[index] = newText }
+                )
+
+                SubmissionItemType.INTENTION -> copy(
+                    intentions = intentions.toMutableList().apply { this[index] = newText }
+                )
+
+                SubmissionItemType.GRATEFUL_THING -> copy(
+                    gratefulThings = gratefulThings.toMutableList().apply { this[index] = newText }
+                )
+            }
+        }
     }
 }

@@ -23,11 +23,21 @@ open class HomeViewModel @Inject constructor(
     val name = "Varun"
 
     init {
+        // Collect morning entry updates
         viewModelScope.launch {
-            getJournalEntryByDateUseCase.execute(LocalDate.now()).collect { eveningEntry ->
+            getJournalEntryByDateUseCase.getMorningEntry(LocalDate.now()).collect { morningEntry ->
                 _uiState.value = _uiState.value.copy(
-                    name = name,
-                    isEveningCompleted = eveningEntry?.journalEntry?.completed ?: false
+                    isMorningCompleted = morningEntry?.journalEntry?.completed ?: false
+                )
+            }
+        }
+
+        // Collect evening entry updates
+        viewModelScope.launch {
+            getJournalEntryByDateUseCase.getEveningEntry(LocalDate.now()).collect { eveningEntry ->
+                _uiState.value = _uiState.value.copy(
+                    isEveningCompleted = eveningEntry?.journalEntry?.completed ?: false,
+                    name = name
                 )
             }
         }

@@ -1,6 +1,6 @@
 package com.example.thejournal.domain
 
-import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.data.repository.JournalRepository
 import javax.inject.Inject
 
@@ -10,7 +10,7 @@ import javax.inject.Inject
 class GetAllCompletedJournalEntriesUseCase @Inject constructor(
     private val journalRepository: JournalRepository
 ) {
-    suspend fun execute(): List<JournalEntryWithDetails> {
+    suspend fun execute(): List<EveningEntry> {
         return journalRepository.getAllJournalEntries()
     }
 }

@@ -1,6 +1,6 @@
 package com.example.thejournal.ui
 
-import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.data.EveningEntry
 import java.time.LocalDate
 
 /**
@@ -8,5 +8,5 @@ import java.time.LocalDate
  */
 data class ArchiveUiState(
     val completedDates: List<LocalDate>? = emptyList(),
-    val journalEntries: List<JournalEntryWithDetails> = emptyList()
+    val journalEntries: List<EveningEntry> = emptyList()
 )

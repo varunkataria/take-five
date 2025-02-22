@@ -16,4 +16,14 @@ class Converters {
             LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE)
         }
     }
+
+    @TypeConverter
+    fun fromEntryType(entryType: EntryType): String {
+        return entryType.name
+    }
+
+    @TypeConverter
+    fun toEntryType(value: String): EntryType {
+        return EntryType.valueOf(value)
+    }
 }

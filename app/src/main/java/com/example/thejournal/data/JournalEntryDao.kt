@@ -20,13 +20,24 @@ interface JournalEntryDao {
     @Insert
     suspend fun insertThingToImprove(thingToImprove: ThingToImprove)
 
+    @Insert
+    suspend fun insertIntention(intention: Intention)
+
+    @Insert
+    suspend fun insertGratefulThing(gratefulThing: GratefulThing)
+
     @Transaction
-    @Query("SELECT * FROM journal_entries WHERE date = :date")
+    @Query("SELECT * FROM journal_entries WHERE date = :date AND entryType = 'MORNING'")
     @TypeConverters(Converters::class)
-    fun getEntryByDate(date: LocalDate): Flow<JournalEntryWithDetails?>
+    fun getMorningEntryByDate(date: LocalDate): Flow<MorningEntry?>
+
+    @Transaction
+    @Query("SELECT * FROM journal_entries WHERE date = :date AND entryType = 'EVENING'")
+    @TypeConverters(Converters::class)
+    fun getEveningEntryByDate(date: LocalDate): Flow<EveningEntry?>
 
     @Transaction
     @Query("SELECT * FROM journal_entries")
     @TypeConverters(Converters::class)
-    suspend fun getAllJournalEntries(): List<JournalEntryWithDetails>
+    suspend fun getAllJournalEntries(): List<EveningEntry>
 }

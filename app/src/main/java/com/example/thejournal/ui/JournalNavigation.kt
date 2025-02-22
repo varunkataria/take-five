@@ -16,7 +16,7 @@ fun JournalNavigation() {
     NavHost(navController = navController, startDestination = Home) {
         composable<Home> {
             HomeScreen(
-                onPromptClick = { navController.navigate(route = Journal()) },
+                onPromptClick = { entryType -> navController.navigate(route = Journal(entryType = entryType)) },
                 onNavBarItemClick = { route -> navController.navigate(route) }
             )
         }

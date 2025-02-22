@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.thejournal.data.EntryType
 import kotlinx.serialization.Serializable
 
 data class NavRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
@@ -20,6 +21,7 @@ object Home
 
 @Serializable
 data class Journal(
+    val entryType: EntryType = EntryType.EVENING,
     val date: String? = null,
     val isBottomSheet: Boolean = false
 )

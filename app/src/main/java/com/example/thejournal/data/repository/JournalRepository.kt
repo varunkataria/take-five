@@ -1,9 +1,13 @@
 package com.example.thejournal.data.repository
 
 import com.example.thejournal.data.AmazingThing
+import com.example.thejournal.data.EntryType
 import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.data.JournalEntryDao
-import com.example.thejournal.data.JournalEntryWithDetails
+import com.example.thejournal.data.EveningEntry
+import com.example.thejournal.data.GratefulThing
+import com.example.thejournal.data.Intention
+import com.example.thejournal.data.MorningEntry
 import com.example.thejournal.data.ThingToImprove
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -22,30 +26,94 @@ import javax.inject.Singleton
 class JournalRepository @Inject constructor(
     private val journalEntryDao: JournalEntryDao
 ) {
-
     /**
-     * Insert a new journal entry along with its associated amazing things and things to improve.
+     * Insert a new morning journal entry along with its associated intentions and grateful things.
      */
-    suspend fun addJournalEntry(date: LocalDate, amazingThings: List<String>, thingsToImprove: List<String>) {
+    suspend fun addMorningEntry(
+        date: LocalDate,
+        intentions: List<String>,
+        gratefulThings: List<String>
+    ) {
         // Insert the journal entry & set completed to true for the given date
-        val entryId = journalEntryDao.insertJournalEntry(JournalEntry(date = date, completed = true))
+        val entryId = journalEntryDao.insertJournalEntry(
+            JournalEntry(
+                date = date,
+                completed = true,
+                entryType = EntryType.MORNING
+            )
+        )
 
-        amazingThings.forEach { thing ->
-            journalEntryDao.insertAmazingThing(AmazingThing(journalEntryId = entryId.toInt(), description = thing))
+        intentions.forEach { intention ->
+            journalEntryDao.insertIntention(
+                Intention(
+                    journalEntryId = entryId.toInt(),
+                    description = intention
+                )
+            )
         }
 
-        thingsToImprove.forEach { thing ->
-            journalEntryDao.insertThingToImprove(ThingToImprove(journalEntryId = entryId.toInt(), description = thing))
+        gratefulThings.forEach { thing ->
+            journalEntryDao.insertGratefulThing(
+                GratefulThing(
+                    journalEntryId = entryId.toInt(),
+                    description = thing
+                )
+            )
         }
     }
 
     /**
-     * Retrieve a journal entry and its associated amazing things and things to improve by date.
-     *
-     * @return A JournalEntryWithDetails object containing the journal entry and related entities.
+     * Insert a new evening journal entry along with its associated amazing things and things to improve.
      */
-    fun getJournalEntryByDate(date: LocalDate): Flow<JournalEntryWithDetails?> {
-        return journalEntryDao.getEntryByDate(date)
+    suspend fun addEveningEntry(
+        date: LocalDate,
+        amazingThings: List<String>,
+        thingsToImprove: List<String>
+    ) {
+        // Insert the journal entry & set completed to true for the given date
+        val entryId = journalEntryDao.insertJournalEntry(
+            JournalEntry(
+                date = date,
+                completed = true,
+                entryType = EntryType.EVENING
+            )
+        )
+
+        amazingThings.forEach { thing ->
+            journalEntryDao.insertAmazingThing(
+                AmazingThing(
+                    journalEntryId = entryId.toInt(),
+                    description = thing
+                )
+            )
+        }
+
+        thingsToImprove.forEach { thing ->
+            journalEntryDao.insertThingToImprove(
+                ThingToImprove(
+                    journalEntryId = entryId.toInt(),
+                    description = thing
+                )
+            )
+        }
+    }
+
+    /**
+     * Retrieve a morning journal entry and its associated intentions and grateful things.
+     *
+     * @return A MorningEntry object containing the journal entry and related entities.
+     */
+    fun getMorningEntryByDate(date: LocalDate): Flow<MorningEntry?> {
+        return journalEntryDao.getMorningEntryByDate(date)
+    }
+
+    /**
+     * Retrieve an evening journal entry and its associated amazing things and things to improve by date.
+     *
+     * @return A EveningEntry object containing the journal entry and related entities.
+     */
+    fun getEveningEntryByDate(date: LocalDate): Flow<EveningEntry?> {
+        return journalEntryDao.getEveningEntryByDate(date)
     }
 
     /**
@@ -53,7 +121,7 @@ class JournalRepository @Inject constructor(
      *
      * @return A list containing all completed JournalEntryWithDetails
      */
-    suspend fun getAllJournalEntries(): List<JournalEntryWithDetails> {
+    suspend fun getAllJournalEntries(): List<EveningEntry> {
         return journalEntryDao.getAllJournalEntries()
     }
 }

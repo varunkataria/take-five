@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thejournal.R
+import com.example.thejournal.data.EntryType
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_MEDIUM_BLUE
 import com.example.thejournal.ui.theme.T5_RED
@@ -53,7 +54,7 @@ import com.example.thejournal.ui.theme.T5_WHITE
  */
 @Composable
 fun HomeScreen(
-    onPromptClick: () -> Unit,
+    onPromptClick: (EntryType) -> Unit,
     onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
@@ -61,6 +62,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     HomeScreen(
         name = uiState.name,
+        isMorningCompleted = uiState.isMorningCompleted,
         isEveningCompleted = uiState.isEveningCompleted,
         onPromptClick = onPromptClick,
         onNavBarItemClick = onNavBarItemClick,
@@ -72,8 +74,9 @@ fun HomeScreen(
 @Composable
 private fun HomeScreen(
     name: String,
+    isMorningCompleted: Boolean,
     isEveningCompleted: Boolean,
-    onPromptClick: () -> Unit,
+    onPromptClick: (EntryType) -> Unit,
     onNavBarItemClick: (Any) -> Unit,
     modifier: Modifier
 ) {
@@ -170,8 +173,18 @@ private fun HomeScreen(
                     .padding(top = 32.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp), // Gap between boxes
             ) {
-                PromptBox("morning prompt", false, Modifier.weight(1f))
-                PromptBox("evening prompt", isEveningCompleted, Modifier.weight(1f), onPromptClick)
+                PromptBox(
+                    "morning prompt",
+                    isMorningCompleted,
+                    { onPromptClick(EntryType.MORNING) },
+                    Modifier.weight(1f)
+                )
+                PromptBox(
+                    "evening prompt",
+                    isEveningCompleted,
+                    { onPromptClick(EntryType.EVENING) },
+                    Modifier.weight(1f)
+                )
             }
         }
     }
@@ -181,13 +194,13 @@ private fun HomeScreen(
 private fun PromptBox(
     title: String,
     completed: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable { onClick?.invoke() }
+            .clickable { onClick.invoke() }
             .background(if (completed) T5_WHITE else T5_WHITE.copy(alpha = 0.5f))
             .border(
                 width = if (completed) 1.dp else 0.dp,
@@ -219,6 +232,7 @@ private fun PromptBox(
 fun PreviewHomeScreen() {
     HomeScreen(
         name = "Varun",
+        isMorningCompleted = true,
         isEveningCompleted = true,
         onPromptClick = {},
         onNavBarItemClick = {},

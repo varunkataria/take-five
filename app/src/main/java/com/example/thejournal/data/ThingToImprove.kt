@@ -24,7 +24,7 @@ import androidx.room.PrimaryKey
     indices = [Index("journalEntryId")]
 )
 data class ThingToImprove(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val journalEntryId: Int, // Foreign key column
-    val description: String
-)
+    @PrimaryKey(autoGenerate = true) override val id: Int = 0,
+    override val journalEntryId: Int,
+    override val description: String
+) : SubmissionItem
