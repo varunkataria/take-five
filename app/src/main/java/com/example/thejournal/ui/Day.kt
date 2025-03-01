@@ -15,7 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.thejournal.data.EntryType
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
+import com.example.thejournal.ui.theme.T5_LIGHT_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.core.CalendarDay
@@ -30,8 +32,9 @@ fun Day(
     day: CalendarDay,
     isSelectable: Boolean,
     isToday: Boolean,
-    isCompleted: Boolean,
-    onDateClick: (LocalDate) -> Unit,
+    isMorningCompleted: Boolean,
+    isEveningCompleted: Boolean,
+    onDateClick: (LocalDate, EntryType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -43,26 +46,38 @@ fun Day(
                 color = if (isToday) T5_RED else Color.Transparent,
                 shape = RoundedCornerShape(10.dp)
             )
-            .clickable(onClick = { onDateClick(day.date) })
+            // TODO: Figure out how to handle which entry type to show after clicking on a date
+            .clickable(onClick = { onDateClick(day.date, EntryType.EVENING) })
     ) {
         Box(
             modifier = modifier
                 .aspectRatio(1f)
-                .padding(8.dp)
+                .padding(6.dp)
                 .border(
-                    width = if (isCompleted) 4.dp else 0.dp,
-                    color = if (isCompleted) T5_DARK_BLUE else Color.Transparent,
+                    width = if (isEveningCompleted) 4.dp else 0.dp,
+                    color = if (isEveningCompleted) T5_DARK_BLUE else Color.Transparent,
                     shape = RoundedCornerShape(10.dp)
                 )
         ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Center),
-                text = day.date.dayOfMonth.toString(),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (isSelectable) Color.Black else Color.Gray
-            )
+            Box(
+                modifier = modifier
+                    .aspectRatio(1f)
+                    .padding(6.dp)
+                    .border(
+                        width = if (isMorningCompleted) 4.dp else 0.dp,
+                        color = if (isMorningCompleted) T5_LIGHT_BLUE else Color.Transparent,
+                        shape = RoundedCornerShape(10.dp)
+                    )
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    text = day.date.dayOfMonth.toString(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isSelectable) Color.Black else Color.Gray
+                )
+            }
         }
     }
 }
@@ -75,8 +90,9 @@ fun DayPreview_Today() {
             day = CalendarDay(date = LocalDate.now(), position = DayPosition.MonthDate),
             isSelectable = true,
             isToday = true,
-            isCompleted = true,
-            onDateClick = {}
+            isMorningCompleted = true,
+            isEveningCompleted = true,
+            onDateClick = { _, _ -> }
         )
     }
 }
@@ -89,8 +105,9 @@ fun DayPreview_NotToday_Completed() {
             day = CalendarDay(date = LocalDate.now(), position = DayPosition.MonthDate),
             isSelectable = true,
             isToday = false,
-            isCompleted = true,
-            onDateClick = {}
+            isMorningCompleted = true,
+            isEveningCompleted = true,
+            onDateClick = { _, _ -> }
         )
     }
 }
@@ -103,8 +120,9 @@ fun DayPreview_NotSelectable() {
             day = CalendarDay(date = LocalDate.now(), position = DayPosition.MonthDate),
             isSelectable = false,
             isToday = false,
-            isCompleted = false,
-            onDateClick = {}
+            isMorningCompleted = false,
+            isEveningCompleted = false,
+            onDateClick = { _, _ -> }
         )
     }
 }

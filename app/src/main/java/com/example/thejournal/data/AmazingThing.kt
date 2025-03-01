@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "amazing_things",
     foreignKeys = [ForeignKey(
-        entity = JournalEntry::class,
+        entity = EntryDetails::class,
         parentColumns = ["id"],
         childColumns = ["journalEntryId"],
         onDelete = ForeignKey.CASCADE

@@ -29,9 +29,10 @@ fun JournalNavigation() {
         }
         composable<Archive> {
             ArchiveScreen(
-                onDateClick = { date ->
+                onDateClick = { date, entryType ->
                     navController.navigate(
                         route = Journal(
+                            entryType = entryType,
                             date = date.toString(),
                             isBottomSheet = true
                         )

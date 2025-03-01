@@ -27,7 +27,7 @@ open class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             getJournalEntryByDateUseCase.getMorningEntry(LocalDate.now()).collect { morningEntry ->
                 _uiState.value = _uiState.value.copy(
-                    isMorningCompleted = morningEntry?.journalEntry?.completed ?: false
+                    isMorningCompleted = morningEntry?.details?.completed ?: false
                 )
             }
         }
@@ -36,7 +36,7 @@ open class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             getJournalEntryByDateUseCase.getEveningEntry(LocalDate.now()).collect { eveningEntry ->
                 _uiState.value = _uiState.value.copy(
-                    isEveningCompleted = eveningEntry?.journalEntry?.completed ?: false,
+                    isEveningCompleted = eveningEntry?.details?.completed ?: false,
                     name = name
                 )
             }

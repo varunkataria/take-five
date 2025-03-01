@@ -2,7 +2,7 @@ package com.example.thejournal.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thejournal.data.EveningEntry
+import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.domain.GetAllCompletedJournalEntriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,13 +24,18 @@ open class ArchiveViewModel @Inject constructor(
     val uiState: StateFlow<ArchiveUiState> = _uiState
 
     init {
-        // Initialize completedDates with the current month's completed dates
         viewModelScope.launch {
-            val journalEntries = getAllCompletedJournalEntriesUseCase.execute()
-            val completedDates = filterEntriesByDate(journalEntries, YearMonth.now())
+            val morningEntries = getAllCompletedJournalEntriesUseCase.getMorningEntries()
+            val eveningEntries = getAllCompletedJournalEntriesUseCase.getEveningEntries()
+            val completedMorningEntryDates = filterEntriesByDate(morningEntries, YearMonth.now())
+            val completedEveningEntryDates = filterEntriesByDate(eveningEntries, YearMonth.now())
+            val allEntries =
+                (morningEntries + eveningEntries).sortedByDescending { it.details.date }
+
             _uiState.value = _uiState.value.copy(
-                completedDates = completedDates,
-                journalEntries = journalEntries.reversed()
+                entries = allEntries,
+                completedMorningEntryDates = completedMorningEntryDates,
+                completedEveningEntryDates = completedEveningEntryDates,
             )
         }
     }
@@ -38,22 +43,26 @@ open class ArchiveViewModel @Inject constructor(
     fun onCalendarNavigationClick(yearMonth: YearMonth) {
         // get the list of completed dates for the given YearMonth
         viewModelScope.launch {
-            val journalEntries = getAllCompletedJournalEntriesUseCase.execute()
-            val completedDates = filterEntriesByDate(journalEntries, yearMonth)
+            val morningEntries = getAllCompletedJournalEntriesUseCase.getMorningEntries()
+            val eveningEntries = getAllCompletedJournalEntriesUseCase.getEveningEntries()
+            val completedMorningEntryDates = filterEntriesByDate(morningEntries, yearMonth)
+            val completedEveningEntryDates = filterEntriesByDate(eveningEntries, yearMonth)
             _uiState.value = _uiState.value.copy(
-                completedDates = completedDates
+                completedMorningEntryDates = completedMorningEntryDates,
+                completedEveningEntryDates = completedEveningEntryDates,
             )
         }
     }
 
     private fun filterEntriesByDate(
-        entries: List<EveningEntry>,
+        entries: List<JournalEntry>,
         yearMonth: YearMonth
     ): List<LocalDate> {
         val filteredEntries = entries.filter { entry ->
-            entry.journalEntry.date.year == yearMonth.year && entry.journalEntry.date.month == yearMonth.month
+            val entryDetails = entry.details
+            entryDetails.date.year == yearMonth.year && entryDetails.date.month == yearMonth.month
         }
         // Return the dates as a list of LocalDate
-        return filteredEntries.map { it.journalEntry.date }
+        return filteredEntries.map { it.details.date }
     }
 }

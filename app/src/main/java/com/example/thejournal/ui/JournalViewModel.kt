@@ -50,7 +50,7 @@ open class JournalViewModel @Inject constructor(
                     .collect { morningEntry ->
                         morningEntry?.let {
                             _uiState.value = _uiState.value.copy(
-                                completed = morningEntry.journalEntry.completed,
+                                completed = morningEntry.details.completed,
                                 intentions = morningEntry.intentions.map { it.description },
                                 gratefulThings = morningEntry.gratefulThings.map { it.description },
                                 isLoading = false
@@ -62,7 +62,7 @@ open class JournalViewModel @Inject constructor(
                     .collect { eveningEntry ->
                         eveningEntry?.let {
                             _uiState.value = _uiState.value.copy(
-                                completed = eveningEntry.journalEntry.completed,
+                                completed = eveningEntry.details.completed,
                                 amazingThings = eveningEntry.amazingThings.map { it.description },
                                 thingsToImprove = eveningEntry.thingsToImprove.map { it.description },
                                 isLoading = false

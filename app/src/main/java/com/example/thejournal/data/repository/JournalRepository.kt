@@ -2,7 +2,7 @@ package com.example.thejournal.data.repository
 
 import com.example.thejournal.data.AmazingThing
 import com.example.thejournal.data.EntryType
-import com.example.thejournal.data.JournalEntry
+import com.example.thejournal.data.EntryDetails
 import com.example.thejournal.data.JournalEntryDao
 import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.data.GratefulThing
@@ -36,7 +36,7 @@ class JournalRepository @Inject constructor(
     ) {
         // Insert the journal entry & set completed to true for the given date
         val entryId = journalEntryDao.insertJournalEntry(
-            JournalEntry(
+            EntryDetails(
                 date = date,
                 completed = true,
                 entryType = EntryType.MORNING
@@ -72,7 +72,7 @@ class JournalRepository @Inject constructor(
     ) {
         // Insert the journal entry & set completed to true for the given date
         val entryId = journalEntryDao.insertJournalEntry(
-            JournalEntry(
+            EntryDetails(
                 date = date,
                 completed = true,
                 entryType = EntryType.EVENING
@@ -117,11 +117,20 @@ class JournalRepository @Inject constructor(
     }
 
     /**
-     * Retrieve all completed journal entries.
+     * Retrieve all completed morning journal entries.
      *
-     * @return A list containing all completed JournalEntryWithDetails
+     * @return A list containing all completed morning journal entries
      */
-    suspend fun getAllJournalEntries(): List<EveningEntry> {
-        return journalEntryDao.getAllJournalEntries()
+    suspend fun getAllMorningEntries(): List<MorningEntry> {
+        return journalEntryDao.getMorningEntries()
+    }
+
+    /**
+     * Retrieve all completed evening journal entries.
+     *
+     * @return A list containing all completed evening journal entries
+     */
+    suspend fun getAllEveningEntries(): List<EveningEntry> {
+        return journalEntryDao.getEveningEntries()
     }
 }

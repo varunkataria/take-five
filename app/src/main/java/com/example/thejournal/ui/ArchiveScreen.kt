@@ -34,7 +34,10 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.thejournal.data.EntryType
 import com.example.thejournal.data.EveningEntry
+import com.example.thejournal.data.MorningEntry
+import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.T5_WHITE
@@ -48,15 +51,16 @@ import java.time.format.DateTimeFormatter
  */
 @Composable
 fun ArchiveScreen(
-    onDateClick: (LocalDate) -> Unit,
+    onDateClick: (LocalDate, EntryType) -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ArchiveViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     ArchiveScreen(
-        completedDates = uiState.completedDates,
-        journalEntries = uiState.journalEntries,
+        completedMorningEntryDates = uiState.completedMorningEntryDates,
+        completedEveningEntryDates = uiState.completedEveningEntryDates,
+        journalEntries = uiState.entries,
         onDateClick = onDateClick,
         onCalendarNavigationClick = viewModel::onCalendarNavigationClick,
         onCloseClick = onCloseClick,
@@ -67,9 +71,10 @@ fun ArchiveScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ArchiveScreen(
-    completedDates: List<LocalDate>?,
-    journalEntries: List<EveningEntry>,
-    onDateClick: (LocalDate) -> Unit,
+    completedMorningEntryDates: List<LocalDate>?,
+    completedEveningEntryDates: List<LocalDate>?,
+    journalEntries: List<JournalEntry>,
+    onDateClick: (LocalDate, EntryType) -> Unit,
     onCalendarNavigationClick: (YearMonth) -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -118,7 +123,8 @@ private fun ArchiveScreen(
         ) {
             item {
                 Calendar(
-                    completedDates = completedDates,
+                    completedMorningEntryDates = completedMorningEntryDates,
+                    completedEveningEntryDates = completedEveningEntryDates,
                     onDateClick = onDateClick,
                     onCalendarNavigationClick = onCalendarNavigationClick
                 )
@@ -144,8 +150,8 @@ private fun ArchiveScreen(
 
 @Composable
 private fun JournalEntryBox(
-    onDateClick: (LocalDate) -> Unit,
-    entry: EveningEntry,
+    onDateClick: (LocalDate, EntryType) -> Unit,
+    entry: JournalEntry,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -153,7 +159,7 @@ private fun JournalEntryBox(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(8.dp))
-            .clickable { onDateClick(entry.journalEntry.date) }
+            .clickable { onDateClick(entry.details.date, entry.details.entryType) }
             .background(color = T5_WHITE)
             .border(
                 width = 1.dp,
@@ -163,21 +169,52 @@ private fun JournalEntryBox(
     ) {
         Column {
             val formattedDate =
-                entry.journalEntry.date.format(DateTimeFormatter.ofPattern("M/d/yyyy"))
-            Text(
-                text = "$formattedDate: Evening",
-                modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = T5_RED
-            )
-            Text(
-                text = entry.amazingThings[0].description,
-                modifier = modifier.padding(top = 4.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = T5_DARK_BLUE
-            )
+                entry.details.date.format(DateTimeFormatter.ofPattern("M/d/yyyy"))
+            when (entry) {
+                is MorningEntry -> {
+                    Text(
+                        text = "$formattedDate: Morning",
+                        modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = T5_RED
+                    )
+                    Text(
+                        text = entry.gratefulThings[0].description,
+                        modifier = modifier.padding(
+                            top = 4.dp,
+                            bottom = 8.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = T5_DARK_BLUE
+                    )
+                }
+
+                is EveningEntry -> {
+                    Text(
+                        text = "$formattedDate: Evening",
+                        modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = T5_RED
+                    )
+                    Text(
+                        text = entry.amazingThings[0].description,
+                        modifier = modifier.padding(
+                            top = 4.dp,
+                            bottom = 8.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = T5_DARK_BLUE
+                    )
+                }
+            }
         }
     }
 }
@@ -187,9 +224,10 @@ private fun JournalEntryBox(
 fun ArchiveScreenPreview() {
     TheJournalTheme {
         ArchiveScreen(
-            completedDates = emptyList(),
+            completedMorningEntryDates = emptyList(),
+            completedEveningEntryDates = emptyList(),
             journalEntries = emptyList(),
-            onDateClick = {},
+            onDateClick = { _, _ -> },
             onCalendarNavigationClick = {},
             onCloseClick = {}
         )

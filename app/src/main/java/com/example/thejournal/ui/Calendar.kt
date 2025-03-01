@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.thejournal.data.EntryType
 import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -44,8 +45,9 @@ import java.util.Locale
  */
 @Composable
 fun Calendar(
-    completedDates: List<LocalDate>?,
-    onDateClick: (LocalDate) -> Unit,
+    completedMorningEntryDates: List<LocalDate>?,
+    completedEveningEntryDates: List<LocalDate>?,
+    onDateClick: (LocalDate, EntryType) -> Unit,
     onCalendarNavigationClick: (YearMonth) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -90,9 +92,10 @@ fun Calendar(
             state = state,
             dayContent = { day ->
                 val isSelectable = day.position == DayPosition.MonthDate
-                val isCompleted = completedDates?.contains(day.date) ?: false
+                val isMorningCompleted = completedMorningEntryDates?.contains(day.date) ?: false
+                val isEveningCompleted = completedEveningEntryDates?.contains(day.date) ?: false
                 val isToday = day.position == DayPosition.MonthDate && day.date == today
-                Day(day, isSelectable, isToday, isCompleted, onDateClick)
+                Day(day, isSelectable, isToday, isMorningCompleted, isEveningCompleted, onDateClick)
             },
             monthHeader = {
                 DaysOfWeekHeader(
@@ -147,8 +150,9 @@ private fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarM
 fun CalendarScreenPreview() {
     TheJournalTheme {
         Calendar(
-            completedDates = emptyList(),
-            onDateClick = {},
+            completedMorningEntryDates = emptyList(),
+            completedEveningEntryDates = emptyList(),
+            onDateClick = { _, _ -> },
             onCalendarNavigationClick = {}
         )
     }

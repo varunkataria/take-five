@@ -12,7 +12,7 @@ import java.time.LocalDate
 interface JournalEntryDao {
 
     @Insert
-    suspend fun insertJournalEntry(entry: JournalEntry): Long
+    suspend fun insertJournalEntry(entry: EntryDetails): Long
 
     @Insert
     suspend fun insertAmazingThing(amazingThing: AmazingThing)
@@ -37,7 +37,10 @@ interface JournalEntryDao {
     fun getEveningEntryByDate(date: LocalDate): Flow<EveningEntry?>
 
     @Transaction
-    @Query("SELECT * FROM journal_entries")
-    @TypeConverters(Converters::class)
-    suspend fun getAllJournalEntries(): List<EveningEntry>
+    @Query("SELECT * FROM journal_entries WHERE entryType = 'MORNING'")
+    suspend fun getMorningEntries(): List<MorningEntry>
+
+    @Transaction
+    @Query("SELECT * FROM journal_entries WHERE entryType = 'EVENING'")
+    suspend fun getEveningEntries(): List<EveningEntry>
 }

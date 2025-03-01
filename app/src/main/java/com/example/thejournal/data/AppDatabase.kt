@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [JournalEntry::class, AmazingThing::class, ThingToImprove::class, GratefulThing::class, Intention::class],
+    entities = [EntryDetails::class, AmazingThing::class, ThingToImprove::class, GratefulThing::class, Intention::class],
     version = 4,
     exportSchema = false
 )
