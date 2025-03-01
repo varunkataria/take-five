@@ -132,16 +132,19 @@ private fun ArchiveScreen(
             item {
                 Text(
                     text = "Recent Entries",
-                    modifier = Modifier.padding(top = 32.dp, bottom = 8.dp),
+                    modifier = Modifier
+                        .padding(top = 32.dp, bottom = 8.dp)
+                        .animateItem(),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = T5_RED
                 )
             }
-            items(journalEntries) { entry ->
+            items(journalEntries, key = { it.details.id }) { entry ->
                 JournalEntryBox(
                     onDateClick = onDateClick,
-                    entry = entry
+                    entry = entry,
+                    modifier = Modifier.animateItem()
                 )
             }
         }
