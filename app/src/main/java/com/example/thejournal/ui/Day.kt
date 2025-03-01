@@ -1,15 +1,21 @@
 package com.example.thejournal.ui
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +25,7 @@ import com.example.thejournal.data.EntryType
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_LIGHT_BLUE
 import com.example.thejournal.ui.theme.T5_RED
+import com.example.thejournal.ui.theme.T5_WHITE
 import com.example.thejournal.ui.theme.TheJournalTheme
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
@@ -41,41 +48,70 @@ fun Day(
         modifier = modifier
             .aspectRatio(1f)
             .padding(1.dp)
-            .border(
-                width = if (isToday) 4.dp else 0.dp,
-                color = if (isToday) T5_RED else Color.Transparent,
-                shape = RoundedCornerShape(10.dp)
-            )
-            // TODO: Figure out how to handle which entry type to show after clicking on a date
-            .clickable(onClick = { onDateClick(day.date, EntryType.EVENING) })
+            .background(Color.Transparent),
+        contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = modifier
-                .aspectRatio(1f)
-                .padding(6.dp)
-                .border(
-                    width = if (isEveningCompleted) 4.dp else 0.dp,
-                    color = if (isEveningCompleted) T5_DARK_BLUE else Color.Transparent,
-                    shape = RoundedCornerShape(10.dp)
-                )
+            modifier = Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .fillMaxWidth(0.85f)
+                .fillMaxHeight(0.85f)
+                .background(if (isToday) T5_RED else Color.Transparent)
+                // TODO: Figure out how to handle which entry type to show after clicking on a date
+                .clickable(onClick = { onDateClick(day.date, EntryType.EVENING) }),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = modifier
-                    .aspectRatio(1f)
-                    .padding(6.dp)
-                    .border(
-                        width = if (isMorningCompleted) 4.dp else 0.dp,
-                        color = if (isMorningCompleted) T5_LIGHT_BLUE else Color.Transparent,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-            ) {
-                Text(
+            Text(
+                text = day.date.dayOfMonth.toString(),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isToday) T5_WHITE else if (isSelectable) Color.Black else Color.Gray
+            )
+            CompletionIndicator(
+                isMorningCompleted,
+                isEveningCompleted,
+                Modifier.align(Alignment.BottomCenter)
+            )
+        }
+    }
+}
+
+@Composable
+fun CompletionIndicator(
+    morningCompleted: Boolean,
+    eveningCompleted: Boolean,
+    modifier: Modifier = Modifier
+) {
+    if (morningCompleted || eveningCompleted) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(6.dp)
+        ) {
+            if (morningCompleted && eveningCompleted) {
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center),
-                    text = day.date.dayOfMonth.toString(),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (isSelectable) Color.Black else Color.Gray
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(T5_LIGHT_BLUE)
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(T5_DARK_BLUE)
+                )
+            } else if (morningCompleted) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(T5_LIGHT_BLUE)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(T5_DARK_BLUE)
                 )
             }
         }
