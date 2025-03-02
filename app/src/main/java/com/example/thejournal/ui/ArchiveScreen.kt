@@ -5,9 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,11 +39,13 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.thejournal.data.EntryDetails
 import com.example.thejournal.data.EntryType
 import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.data.MorningEntry
 import com.example.thejournal.data.JournalEntry
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
+import com.example.thejournal.ui.theme.T5_LIGHT_BLUE
 import com.example.thejournal.ui.theme.T5_RED
 import com.example.thejournal.ui.theme.T5_WHITE
 import com.example.thejournal.ui.theme.TheJournalTheme
@@ -170,52 +177,69 @@ private fun JournalEntryBox(
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
-        Column {
-            val formattedDate =
-                entry.details.date.format(DateTimeFormatter.ofPattern("M/d/yyyy"))
-            when (entry) {
-                is MorningEntry -> {
-                    Text(
-                        text = "$formattedDate: Morning",
-                        modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = T5_RED
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(8.dp)
+                    .background(
+                        when (entry.details.entryType) {
+                            EntryType.MORNING -> T5_LIGHT_BLUE
+                            EntryType.EVENING -> T5_DARK_BLUE
+                        }
                     )
-                    Text(
-                        text = entry.gratefulThings[0].description,
-                        modifier = modifier.padding(
-                            top = 4.dp,
-                            bottom = 8.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = T5_DARK_BLUE
-                    )
-                }
+            )
+            Column {
+                val formattedDate =
+                    entry.details.date.format(DateTimeFormatter.ofPattern("M/d/yyyy"))
+                when (entry) {
+                    is MorningEntry -> {
+                        Text(
+                            text = "$formattedDate: Morning",
+                            modifier = modifier.padding(top = 8.dp, start = 12.dp, end = 16.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = T5_RED
+                        )
+                        Text(
+                            text = entry.gratefulThings[0].description,
+                            modifier = modifier.padding(
+                                top = 4.dp,
+                                bottom = 8.dp,
+                                start = 12.dp,
+                                end = 16.dp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = T5_DARK_BLUE
+                        )
+                    }
 
-                is EveningEntry -> {
-                    Text(
-                        text = "$formattedDate: Evening",
-                        modifier = modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = T5_RED
-                    )
-                    Text(
-                        text = entry.amazingThings[0].description,
-                        modifier = modifier.padding(
-                            top = 4.dp,
-                            bottom = 8.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = T5_DARK_BLUE
-                    )
+                    is EveningEntry -> {
+                        Text(
+                            text = "$formattedDate: Evening",
+                            modifier = modifier.padding(top = 8.dp, start = 12.dp, end = 16.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = T5_RED
+                        )
+                        Text(
+                            text = entry.amazingThings[0].description,
+                            modifier = modifier.padding(
+                                top = 4.dp,
+                                bottom = 8.dp,
+                                start = 12.dp,
+                                end = 16.dp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = T5_DARK_BLUE
+                        )
+                    }
                 }
             }
         }
@@ -229,7 +253,17 @@ fun ArchiveScreenPreview() {
         ArchiveScreen(
             completedMorningEntryDates = emptyList(),
             completedEveningEntryDates = emptyList(),
-            journalEntries = emptyList(),
+            journalEntries = listOf(
+                MorningEntry(
+                    details = EntryDetails(
+                        id = 0,
+                        date = LocalDate.now(),
+                        entryType = EntryType.MORNING
+                    ),
+                    gratefulThings = emptyList(),
+                    intentions = emptyList()
+                )
+            ),
             onDateClick = { _, _ -> },
             onCalendarNavigationClick = {},
             onCloseClick = {}

@@ -67,7 +67,7 @@ fun Day(
                 fontWeight = FontWeight.Medium,
                 color = if (isToday) T5_WHITE else if (isSelectable) Color.Black else Color.Gray
             )
-            CompletionIndicator(
+            DayCompletionIndicator(
                 isMorningCompleted,
                 isEveningCompleted,
                 Modifier.align(Alignment.BottomCenter)
@@ -77,7 +77,7 @@ fun Day(
 }
 
 @Composable
-fun CompletionIndicator(
+fun DayCompletionIndicator(
     morningCompleted: Boolean,
     eveningCompleted: Boolean,
     modifier: Modifier = Modifier
