@@ -17,18 +17,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +72,7 @@ fun HomeScreen(
         isEveningCompleted = uiState.isEveningCompleted,
         onPromptClick = onPromptClick,
         onNavBarItemClick = onNavBarItemClick,
+        onNameChange = viewModel::onNameChange,
         modifier = modifier
     )
 }
@@ -78,21 +85,30 @@ private fun HomeScreen(
     isEveningCompleted: Boolean,
     onPromptClick: (EntryType) -> Unit,
     onNavBarItemClick: (Any) -> Unit,
+    onNameChange: (String) -> Unit,
     modifier: Modifier
 ) {
-//    // Trigger the animation when the screen is opened
-//    var triggerAnimation by remember { mutableStateOf(false) }
-//
-//    // Animate the offsetY based on triggerAnimation
-//    val offsetY by animateFloatAsState(
-//        targetValue = if (triggerAnimation) 0f else 32f, // Move text 32 pixels up
-//        animationSpec = tween(durationMillis = 500) // Duration of the animation
-//    )
-//
-//    // Launch the animation effect when the screen is first loaded
-//    LaunchedEffect(Unit) {
-//        triggerAnimation = true
-//    }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isSettingsSheetVisible by remember { mutableStateOf(false) }
+    if (isSettingsSheetVisible) {
+        ModalBottomSheet(
+            onDismissRequest = { isSettingsSheetVisible = false },
+            sheetState = bottomSheetState,
+            dragHandle = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(T5_DARK_BLUE),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    BottomSheetDefaults.DragHandle()
+                }
+            },
+            containerColor = T5_MEDIUM_BLUE,
+        ) {
+            SettingsScreen(name = name, onNameChange = onNameChange)
+        }
+    }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
@@ -118,7 +134,12 @@ private fun HomeScreen(
                 bottomNavRoutes.forEach { bottomNavRoute ->
                     NavigationBarItem(
                         selected = false,
-                        onClick = { onNavBarItemClick(bottomNavRoute.route) },
+                        onClick = {
+                            if (bottomNavRoute.name == "settings")
+                                isSettingsSheetVisible = true
+                            else
+                                onNavBarItemClick(bottomNavRoute.route)
+                        },
                         icon = {
                             Box(
                                 modifier = Modifier
@@ -150,15 +171,19 @@ private fun HomeScreen(
                         )
                     )
                 )
-//                .offset(y = offsetY.dp)
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
         ) {
             Text(
                 text = buildAnnotatedString {
-                    append("Good evening, ")
+                    append("Good evening")
+                    if (name.isNotEmpty()) {
+                        append(", ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Black)) {
+                            append(name)
+                        }
+                    }
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Black)) {
-                        append(name)
                         append("!")
                     }
                 },
@@ -236,6 +261,7 @@ fun PreviewHomeScreen() {
         isEveningCompleted = true,
         onPromptClick = {},
         onNavBarItemClick = {},
+        onNameChange = {},
         modifier = Modifier
     )
 }
