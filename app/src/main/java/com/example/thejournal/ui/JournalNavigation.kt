@@ -5,6 +5,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.thejournal.ui.archive.ArchiveScreen
+import com.example.thejournal.ui.home.HomeScreen
+import com.example.thejournal.ui.journal.JournalScreen
 
 /**
  * Navigation graph for the Journal screens

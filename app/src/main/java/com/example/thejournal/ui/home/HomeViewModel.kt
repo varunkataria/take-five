@@ -1,8 +1,8 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thejournal.data.UserDetailsRepository
+import com.example.thejournal.data.user.UserDetailsRepository
 import com.example.thejournal.domain.GetJournalEntryByDateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

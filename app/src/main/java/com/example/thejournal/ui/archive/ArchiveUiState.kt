@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.archive
 
 import com.example.thejournal.data.JournalEntry
 import java.time.LocalDate

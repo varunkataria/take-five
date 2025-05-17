@@ -1,6 +1,6 @@
 package com.example.thejournal.domain
 
-import com.example.thejournal.data.repository.JournalRepository
+import com.example.thejournal.data.JournalRepository
 import java.time.LocalDate
 import javax.inject.Inject
 

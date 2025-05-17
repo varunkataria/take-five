@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thejournal.R
 import com.example.thejournal.data.EntryType
+import com.example.thejournal.ui.bottomNavRoutes
 import com.example.thejournal.ui.theme.T5_DARK_BLUE
 import com.example.thejournal.ui.theme.T5_MEDIUM_BLUE
 import com.example.thejournal.ui.theme.T5_RED

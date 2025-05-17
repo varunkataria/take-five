@@ -1,6 +1,6 @@
 package com.example.thejournal.domain
 
-import com.example.thejournal.data.repository.JournalRepository
+import com.example.thejournal.data.JournalRepository
 import com.example.thejournal.data.EveningEntry
 import com.example.thejournal.data.MorningEntry
 import kotlinx.coroutines.flow.Flow

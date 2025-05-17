@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.archive
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

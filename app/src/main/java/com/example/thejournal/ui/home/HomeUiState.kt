@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.home
 
 /**
  * Data class to represent the UI state of [HomeScreen]

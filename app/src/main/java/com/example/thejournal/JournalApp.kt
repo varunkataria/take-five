@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.thejournal.data.AppDatabase
 import com.example.thejournal.data.JournalEntryDao
-import com.example.thejournal.data.UserDetailsDao
+import com.example.thejournal.data.user.UserDetailsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

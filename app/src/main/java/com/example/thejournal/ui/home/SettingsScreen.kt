@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

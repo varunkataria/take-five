@@ -1,14 +1,5 @@
-package com.example.thejournal.data.repository
+package com.example.thejournal.data
 
-import com.example.thejournal.data.AmazingThing
-import com.example.thejournal.data.EntryType
-import com.example.thejournal.data.EntryDetails
-import com.example.thejournal.data.JournalEntryDao
-import com.example.thejournal.data.EveningEntry
-import com.example.thejournal.data.GratefulThing
-import com.example.thejournal.data.Intention
-import com.example.thejournal.data.MorningEntry
-import com.example.thejournal.data.ThingToImprove
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject

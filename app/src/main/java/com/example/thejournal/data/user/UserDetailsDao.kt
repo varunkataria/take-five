@@ -1,4 +1,4 @@
-package com.example.thejournal.data
+package com.example.thejournal.data.user
 
 import androidx.room.Dao
 import androidx.room.Insert

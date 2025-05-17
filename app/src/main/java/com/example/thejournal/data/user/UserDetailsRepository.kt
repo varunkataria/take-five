@@ -1,4 +1,4 @@
-package com.example.thejournal.data
+package com.example.thejournal.data.user
 
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

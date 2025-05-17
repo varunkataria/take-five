@@ -1,4 +1,4 @@
-package com.example.thejournal.ui
+package com.example.thejournal.ui.journal
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.example.thejournal.data.EntryType
 import com.example.thejournal.data.SubmissionItemType
 import com.example.thejournal.domain.AddJournalEntryUseCase
 import com.example.thejournal.domain.GetJournalEntryByDateUseCase
+import com.example.thejournal.ui.Journal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
