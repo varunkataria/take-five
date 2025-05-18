@@ -8,16 +8,15 @@ You **take five** minutes — in the morning and at night — to reflect, reset,
 
 ## 📸 sneak peek
 
-<p float="left">
-  <img src="docs/home screen.png" width="200" />
-  <img src="docs/morning prompt screen.png" width="200" />
-  <img src="docs/evening prompt screen.png" width="200" />
-  <img src="docs/archive screen.png" width="200" />
-  <img src="docs/archive bottom sheet.png" width="200" />
-</p>
+<div style="text-align: center;">
+  <img src="docs/home screen.png" width="180" />
+  <img src="docs/morning prompt screen.png" width="180" />
+  <img src="docs/evening prompt screen.png" width="180" />
+  <img src="docs/archive screen.png" width="180" />
+  <img src="docs/archive bottom sheet.png" width="180" />
+</div>
 
 ---
-
 
 ### 🌱 why i built it
 
