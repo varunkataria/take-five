@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.thejournal"
+    namespace = "com.example.takefive"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.thejournal"
+        applicationId = "com.example.takefive"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
