@@ -6,6 +6,19 @@ You **take five** minutes — in the morning and at night — to reflect, reset,
 
 ---
 
+## 📸 sneak peek
+
+<p float="left">
+  <img src="docs/home screen.png" width="200" />
+  <img src="docs/morning prompt screen.png" width="200" />
+  <img src="docs/evening prompt screen.png" width="200" />
+  <img src="docs/archive screen.png" width="200" />
+  <img src="docs/archive bottom sheet.png" width="200" />
+</p>
+
+---
+
+
 ### 🌱 why i built it
 
 I wanted something calm, offline, and unintrusive — no insights, no pushy streaks, no cloud dependency with simple UI and solid architecture.
@@ -23,35 +36,23 @@ I also wanted it to feel like my real gratitude journal. One that lives only on 
 
 ## 🧰 tech stack & architecture
 
+100% Kotlin, Jetpack Compose, and modern Android architecture.
 
-| Layer | Tools                                                                    |
-|-------|--------------------------------------------------------------------------|
-| UI | Compose (Material 3), Compose Navigation                                 |
-| State | ViewModel, UiState + StateFlow                                           |
-| Data | Room (DAO, Database, Entity)                                             |
-| DI | Hilt                                                                     |
-| Domain | UseCases, Repository pattern                                             |
-| Async | Kotlin Coroutines + Flow                                                 |
-| Misc | this amazing [Calendar](https://github.com/kizitonwose/Calendar) library |
-> 🧠 I was intentionally experimenting with clear modern Android architecture layers (UI, domain, data) for maintainability.
-> 
-> Most calls that touch the database goes through a UseCase for fun. Repository calls the DAO directly (no DataSource layer).
+| Component            | Tools & Libraries                                                              |
+|----------------------|---------------------------------------------------------------------------------|
+| UI                   | Jetpack Compose (Material 3), Compose Navigation                               |
+| UI + State Management | ViewModel, `UiState` data classes, `StateFlow`                                 |
+| Data Layer           | Room (Entities, DAO, Database), Repository                       |
+| Domain Layer         | UseCases                                                    |
+| Dependency Injection | Hilt                                                                       |
+| Async                | Kotlin Coroutines, Flow                                                        |
+| Misc      | [`kizitonwose/Calendar`](https://github.com/kizitonwose/Calendar)              |> 🧠 I was intentionally experimenting with clear modern Android architecture layers (UI, domain, data) for maintainability.
+
+ Most calls that touch the database go through a UseCase just for experimenting with. Repository calls the DAO directly (no DataSource).
 
 ---
+
 <!--
-
-## 📸 sneak peek
-
-```bash
-# ./screenshots/morning.png     ./screenshots/evening.png     ./screenshots/calendar.png
-```
-<p float="left">
-  <img src="./screenshots/morning.png" width="200" />
-  <img src="./screenshots/evening.png" width="200" />
-  <img src="./screenshots/calendar.png" width="200" />
-</p>
-
----
 ## 🏁 getting started
 
 ```bash
@@ -73,6 +74,6 @@ Open in Android Studio and run it on your device or emulator.
 
 ---
 
-## 🤝 open to feedback
+## 🤝 feedback
 
-I built **take five** just for myself, but it’s meant to be used by real people. If you have ideas or want to contribute - feel free to reach out!
+I built **take five** just for myself, but it’s open to be used by anybody. If you have ideas or want to contribute - feel free to reach out!
