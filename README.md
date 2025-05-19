@@ -25,7 +25,7 @@ You **take five** minutes — in the morning and at night — to reflect, reset,
 
 I wanted something calm, offline, and unintrusive — no insights, no pushy streaks, no cloud dependency with simple UI and solid architecture.
 
-I also wanted it to feel like my real gratitude journal. One that lives only on your device — no syncing, no backup, no login. If you delete the app, it’s like tossing out a notebook. And once you write something, you can’t go back and edit it later — like you wrote it with a pen.
+I also wanted it to feel like my real gratitude journal. One that lives only on your device without syncing or backup. If you delete the app or it's data, it’s like tossing out a notebook. And once you write something, you can’t go back and edit it later — like you wrote it with a pen.
 
 ---
 
@@ -40,15 +40,15 @@ I also wanted it to feel like my real gratitude journal. One that lives only on 
 
 100% Kotlin, Jetpack Compose, and modern Android architecture.
 
-| Component            | Tools & Libraries                                                              |
-|----------------------|---------------------------------------------------------------------------------|
-| UI                   | Jetpack Compose (Material 3), Compose Navigation                               |
-| UI + State Management | ViewModel, `UiState` data classes, `StateFlow`                                 |
+| Component            | Tools & Libraries                                                         |
+|----------------------|----------------------------------------------------------------------------|
+| UI                   | Jetpack Compose (Material 3), Compose Navigation                          |
+| UI + State Management | ViewModel, UiState data classes, StateFlow                                |
 | Data Layer           | Room (Entities, DAO, Database), Repository                       |
 | Domain Layer         | UseCases                                                    |
-| Dependency Injection | Hilt                                                                       |
-| Async                | Kotlin Coroutines, Flow                                                        |
-| Misc      | [`kizitonwose/Calendar`](https://github.com/kizitonwose/Calendar)              |> 🧠 I was intentionally experimenting with clear modern Android architecture layers (UI, domain, data) for maintainability.
+| Dependency Injection | Hilt                                                                      |
+| Async                | Kotlin Coroutines, Flow                                                   |
+| Misc      | [`kizitonwose/Calendar`](https://github.com/kizitonwose/Calendar)         |> 🧠 I was intentionally experimenting with clear modern Android architecture layers (UI, domain, data) for maintainability.
 
  Most calls that touch the database go through a UseCase just for experimenting with. Repository calls the DAO directly (no DataSource).
 
