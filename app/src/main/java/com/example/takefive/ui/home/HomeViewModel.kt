@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -26,28 +27,36 @@ open class HomeViewModel @Inject constructor(
     init {
         // Collect morning entry updates
         viewModelScope.launch {
-            getJournalEntryByDateUseCase.getMorningEntry(LocalDate.now()).collect { morningEntry ->
-                _uiState.value = _uiState.value.copy(
-                    isMorningCompleted = morningEntry?.details?.completed ?: false
-                )
-            }
+            getJournalEntryByDateUseCase.getMorningEntry(LocalDate.now())
+                .collect { morningEntry ->
+                    _uiState.update {
+                        it.copy(
+                            isMorningCompleted = morningEntry?.details?.completed ?: false
+                        )
+                    }
+                }
         }
 
         // Collect evening entry updates
         viewModelScope.launch {
-            getJournalEntryByDateUseCase.getEveningEntry(LocalDate.now()).collect { eveningEntry ->
-                _uiState.value = _uiState.value.copy(
-                    isEveningCompleted = eveningEntry?.details?.completed ?: false,
-                )
-            }
+            getJournalEntryByDateUseCase.getEveningEntry(LocalDate.now())
+                .collect { eveningEntry ->
+                    _uiState.update {
+                        it.copy(
+                            isEveningCompleted = eveningEntry?.details?.completed ?: false
+                        )
+                    }
+                }
         }
 
         // Collect updates for the user's name
         viewModelScope.launch {
             userDetailsRepository.getUserDetails().collectLatest { userDetails ->
-                _uiState.value = _uiState.value.copy(
-                    name = userDetails?.name ?: ""
-                )
+                _uiState.update {
+                    it.copy(
+                        name = userDetails?.name.orEmpty()
+                    )
+                }
             }
         }
     }
